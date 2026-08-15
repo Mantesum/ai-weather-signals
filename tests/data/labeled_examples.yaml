@@ -1,0 +1,11 @@
+# Small original, manually labelled set; no copied posts or personal data.
+- {lang: ru, text: "В Москве сейчас стеной льёт дождь", label: personal_current_observation, phenomenon: heavy_rain}
+- {lang: ru, text: "Завтра в Москве ожидается дождь", label: forecast, phenomenon: rain}
+- {lang: ru, text: "У нас сегодня нет дождя", label: negation, phenomenon: rain}
+- {lang: ru, text: "В душе сегодня гроза", label: metaphor_or_joke, phenomenon: thunderstorm}
+- {lang: ru, text: "А в Париже сейчас снег?", label: question, phenomenon: snow}
+- {lang: en, text: "Heavy snow outside in Chicago right now", label: personal_current_observation, phenomenon: heavy_snow}
+- {lang: en, text: "Forecast says rain tomorrow", label: forecast, phenomenon: rain}
+- {lang: en, text: "It isn't raining in London", label: negation, phenomenon: rain}
+- {lang: en, text: "It is raining cats and dogs in my inbox", label: metaphor_or_joke, phenomenon: rain}
+- {lang: en, text: "Official: flash flooding reported in Miami", label: official_report, phenomenon: flood}

@@ -1,0 +1,3 @@
+$ErrorActionPreference = 'Stop'
+Set-Location -LiteralPath (Split-Path -Parent $PSScriptRoot)
+uv run weather-signals serve --host 127.0.0.1 --port 8000

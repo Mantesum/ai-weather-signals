@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: weather_signals
+      POSTGRES_USER: weather_signals
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-before-exposing}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - weather-signals-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weather_signals -d weather_signals"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+volumes:
+  weather-signals-pg:

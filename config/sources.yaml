@@ -1,0 +1,49 @@
+version: 1
+sources:
+  - name: bluesky-jetstream
+    adapter: jetstream
+    enabled: false
+    target: wss://jetstream2.us-east.bsky.network/subscribe
+    language: und
+    poll_interval_seconds: 300
+    trust: 0.45
+    tags: [social, global]
+    store_text: true
+    options:
+      collections: [app.bsky.feed.post]
+      max_messages: 200
+      read_timeout_seconds: 10
+  - name: mastodon-weather
+    adapter: mastodon
+    enabled: false
+    target: https://mastodon.social
+    language: en
+    poll_interval_seconds: 600
+    trust: 0.45
+    tags: [social, global]
+    store_text: true
+    env_token: MASTODON_ACCESS_TOKEN
+    options:
+      hashtag: weather
+      limit: 40
+  - name: example-official-rss
+    adapter: rss
+    enabled: false
+    target: https://example.invalid/weather.atom
+    region: Moscow
+    language: ru
+    poll_interval_seconds: 900
+    trust: 0.85
+    tags: [official, replace-me]
+    store_text: true
+  - name: example-telegram-channel
+    adapter: telegram
+    enabled: false
+    target: public_channel_username
+    region: Moscow
+    language: ru
+    poll_interval_seconds: 600
+    trust: 0.55
+    tags: [social, optional, replace-me]
+    store_text: true
+    env_token: TELEGRAM_API_HASH

@@ -1,0 +1,74 @@
+version: 1
+# Pilot anchors are for filtering and fallback geocoding, not one request per city.
+# IDs are stable slugs; geonames_id enables a future catalogue import/join with ProjectEOL Weather.
+cities:
+  - {id: moscow, name: Moscow, country: RU, latitude: 55.7558, longitude: 37.6173, geonames_id: 524901, aliases: [Москва, Moskva]}
+  - {id: saint-petersburg, name: Saint Petersburg, country: RU, latitude: 59.9386, longitude: 30.3141, geonames_id: 498817, aliases: [Санкт-Петербург, Петербург]}
+  - {id: novosibirsk, name: Novosibirsk, country: RU, latitude: 55.0415, longitude: 82.9346, aliases: [Новосибирск]}
+  - {id: yekaterinburg, name: Yekaterinburg, country: RU, latitude: 56.8389, longitude: 60.6057, aliases: [Екатеринбург]}
+  - {id: kazan, name: Kazan, country: RU, latitude: 55.7961, longitude: 49.1064, aliases: [Казань]}
+  - {id: nizhny-novgorod, name: Nizhny Novgorod, country: RU, latitude: 56.2965, longitude: 43.9361, aliases: [Нижний Новгород]}
+  - {id: chelyabinsk, name: Chelyabinsk, country: RU, latitude: 55.1644, longitude: 61.4368, aliases: [Челябинск]}
+  - {id: krasnoyarsk, name: Krasnoyarsk, country: RU, latitude: 56.0153, longitude: 92.8932, aliases: [Красноярск]}
+  - {id: samara, name: Samara, country: RU, latitude: 53.1959, longitude: 50.1008, aliases: [Самара]}
+  - {id: ufa, name: Ufa, country: RU, latitude: 54.7388, longitude: 55.9721, aliases: [Уфа]}
+  - {id: rostov-on-don, name: Rostov-on-Don, country: RU, latitude: 47.2357, longitude: 39.7015, aliases: [Ростов-на-Дону]}
+  - {id: omsk, name: Omsk, country: RU, latitude: 54.9885, longitude: 73.3242, aliases: [Омск]}
+  - {id: volgograd, name: Volgograd, country: RU, latitude: 48.7080, longitude: 44.5133, aliases: [Волгоград]}
+  - {id: voronezh, name: Voronezh, country: RU, latitude: 51.6720, longitude: 39.1843, aliases: [Воронеж]}
+  - {id: perm, name: Perm, country: RU, latitude: 58.0105, longitude: 56.2502, aliases: [Пермь]}
+  - {id: krasnodar, name: Krasnodar, country: RU, latitude: 45.0355, longitude: 38.9753, aliases: [Краснодар]}
+  - {id: saratov, name: Saratov, country: RU, latitude: 51.5336, longitude: 46.0343, aliases: [Саратов]}
+  - {id: tyumen, name: Tyumen, country: RU, latitude: 57.1522, longitude: 65.5272, aliases: [Тюмень]}
+  - {id: tolyatti, name: Tolyatti, country: RU, latitude: 53.5078, longitude: 49.4204, aliases: [Тольятти]}
+  - {id: izhevsk, name: Izhevsk, country: RU, latitude: 56.8527, longitude: 53.2115, aliases: [Ижевск]}
+  - {id: barnaul, name: Barnaul, country: RU, latitude: 53.3474, longitude: 83.7784, aliases: [Барнаул]}
+  - {id: irkutsk, name: Irkutsk, country: RU, latitude: 52.2864, longitude: 104.2807, aliases: [Иркутск]}
+  - {id: khabarovsk, name: Khabarovsk, country: RU, latitude: 48.4802, longitude: 135.0719, aliases: [Хабаровск]}
+  - {id: vladivostok, name: Vladivostok, country: RU, latitude: 43.1155, longitude: 131.8855, aliases: [Владивосток]}
+  - {id: murmansk, name: Murmansk, country: RU, latitude: 68.9707, longitude: 33.0749, aliases: [Мурманск]}
+  - {id: arkhangelsk, name: Arkhangelsk, country: RU, latitude: 64.5393, longitude: 40.5187, aliases: [Архангельск]}
+  - {id: yakutsk, name: Yakutsk, country: RU, latitude: 62.0355, longitude: 129.6755, aliases: [Якутск]}
+  - {id: sochi, name: Sochi, country: RU, latitude: 43.5855, longitude: 39.7231, aliases: [Сочи]}
+  - {id: kaliningrad, name: Kaliningrad, country: RU, latitude: 54.7104, longitude: 20.4522, aliases: [Калининград]}
+  - {id: norilsk, name: Norilsk, country: RU, latitude: 69.3535, longitude: 88.2027, aliases: [Норильск]}
+  - {id: paris, name: Paris, country: FR, latitude: 48.8566, longitude: 2.3522, geonames_id: 2988507, aliases: [Париж]}
+  - {id: london, name: London, country: GB, latitude: 51.5074, longitude: -0.1278, geonames_id: 2643743, aliases: [Лондон]}
+  - {id: berlin, name: Berlin, country: DE, latitude: 52.5200, longitude: 13.4050, aliases: [Берлин]}
+  - {id: rome, name: Rome, country: IT, latitude: 41.9028, longitude: 12.4964, aliases: [Рим, Roma]}
+  - {id: madrid, name: Madrid, country: ES, latitude: 40.4168, longitude: -3.7038, aliases: [Мадрид]}
+  - {id: amsterdam, name: Amsterdam, country: NL, latitude: 52.3676, longitude: 4.9041, aliases: [Амстердам]}
+  - {id: oslo, name: Oslo, country: NO, latitude: 59.9139, longitude: 10.7522, aliases: [Осло]}
+  - {id: reykjavik, name: Reykjavik, country: IS, latitude: 64.1466, longitude: -21.9426, aliases: [Рейкьявик]}
+  - {id: athens, name: Athens, country: GR, latitude: 37.9838, longitude: 23.7275, aliases: [Афины]}
+  - {id: istanbul, name: Istanbul, country: TR, latitude: 41.0082, longitude: 28.9784, aliases: [Стамбул]}
+  - {id: new-york, name: New York, country: US, latitude: 40.7128, longitude: -74.0060, geonames_id: 5128581, aliases: [Нью-Йорк, NYC]}
+  - {id: chicago, name: Chicago, country: US, latitude: 41.8781, longitude: -87.6298, aliases: [Чикаго]}
+  - {id: miami, name: Miami, country: US, latitude: 25.7617, longitude: -80.1918, aliases: [Майами]}
+  - {id: los-angeles, name: Los Angeles, country: US, latitude: 34.0522, longitude: -118.2437, aliases: [Лос-Анджелес, LA]}
+  - {id: seattle, name: Seattle, country: US, latitude: 47.6062, longitude: -122.3321, aliases: [Сиэтл]}
+  - {id: denver, name: Denver, country: US, latitude: 39.7392, longitude: -104.9903, aliases: [Денвер]}
+  - {id: toronto, name: Toronto, country: CA, latitude: 43.6532, longitude: -79.3832, aliases: [Торонто]}
+  - {id: vancouver, name: Vancouver, country: CA, latitude: 49.2827, longitude: -123.1207, aliases: [Ванкувер]}
+  - {id: mexico-city, name: Mexico City, country: MX, latitude: 19.4326, longitude: -99.1332, aliases: [Мехико]}
+  - {id: sao-paulo, name: Sao Paulo, country: BR, latitude: -23.5505, longitude: -46.6333, aliases: [Сан-Паулу, São Paulo]}
+  - {id: buenos-aires, name: Buenos Aires, country: AR, latitude: -34.6037, longitude: -58.3816, aliases: [Буэнос-Айрес]}
+  - {id: tokyo, name: Tokyo, country: JP, latitude: 35.6762, longitude: 139.6503, aliases: [Токио, 東京]}
+  - {id: seoul, name: Seoul, country: KR, latitude: 37.5665, longitude: 126.9780, aliases: [Сеул, 서울]}
+  - {id: beijing, name: Beijing, country: CN, latitude: 39.9042, longitude: 116.4074, aliases: [Пекин, 北京]}
+  - {id: shanghai, name: Shanghai, country: CN, latitude: 31.2304, longitude: 121.4737, aliases: [Шанхай, 上海]}
+  - {id: delhi, name: Delhi, country: IN, latitude: 28.6139, longitude: 77.2090, aliases: [Дели, New Delhi]}
+  - {id: mumbai, name: Mumbai, country: IN, latitude: 19.0760, longitude: 72.8777, aliases: [Мумбаи]}
+  - {id: dubai, name: Dubai, country: AE, latitude: 25.2048, longitude: 55.2708, aliases: [Дубай]}
+  - {id: bangkok, name: Bangkok, country: TH, latitude: 13.7563, longitude: 100.5018, aliases: [Бангкок]}
+  - {id: singapore, name: Singapore, country: SG, latitude: 1.3521, longitude: 103.8198, aliases: [Сингапур]}
+  - {id: jakarta, name: Jakarta, country: ID, latitude: -6.2088, longitude: 106.8456, aliases: [Джакарта]}
+  - {id: manila, name: Manila, country: PH, latitude: 14.5995, longitude: 120.9842, aliases: [Манила]}
+  - {id: sydney, name: Sydney, country: AU, latitude: -33.8688, longitude: 151.2093, aliases: [Сидней]}
+  - {id: melbourne, name: Melbourne, country: AU, latitude: -37.8136, longitude: 144.9631, aliases: [Мельбурн]}
+  - {id: cape-town, name: Cape Town, country: ZA, latitude: -33.9249, longitude: 18.4241, aliases: [Кейптаун]}
+  - {id: cairo, name: Cairo, country: EG, latitude: 30.0444, longitude: 31.2357, aliases: [Каир]}
+  - {id: nairobi, name: Nairobi, country: KE, latitude: -1.2921, longitude: 36.8219, aliases: [Найроби]}
+  - {id: lagos, name: Lagos, country: NG, latitude: 6.5244, longitude: 3.3792, aliases: [Лагос]}
+  - {id: anchorage, name: Anchorage, country: US, latitude: 61.2181, longitude: -149.9003, aliases: [Анкоридж]}
+  - {id: honolulu, name: Honolulu, country: US, latitude: 21.3099, longitude: -157.8581, aliases: [Гонолулу]}
