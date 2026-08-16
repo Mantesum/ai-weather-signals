@@ -85,4 +85,29 @@ def test_ollama_uses_native_schema_and_disables_thinking() -> None:
     assert payload["think"] is False
     assert payload["stream"] is False
     assert payload["format"]["required"]
-    assert payload["options"]["num_predict"] == 500
+    assert payload["options"]["num_predict"] == 160
+    assert payload["keep_alive"] == "15m"
+
+
+def test_timeout_is_not_retried() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        raise httpx.ReadTimeout("slow model", request=request)
+
+    classifier = LLMClassifier(
+        Settings(
+            llm_provider="ollama",
+            llm_base_url="http://ollama.test:11434",
+            author_hash_salt="safe-test-salt",
+        ),
+        httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    try:
+        classifier.classify("Rain in London now", "London", "2026-08-16T10:00:00Z")
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("Timeout must fail classification")
+    assert len(requests) == 1

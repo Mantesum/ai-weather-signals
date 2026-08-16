@@ -9,7 +9,15 @@ from . import __version__
 from .config import get_settings
 from .db import get_session
 from .metrics import metrics
-from .models import ModelVersion, ProcessingError, RawMessage, Source, WeatherEvent, WeatherSignal
+from .models import (
+    ClassificationDecision,
+    ModelVersion,
+    ProcessingError,
+    RawMessage,
+    Source,
+    WeatherEvent,
+    WeatherSignal,
+)
 from .pipeline.geocode import haversine_km
 from .pipeline.normalize import safe_excerpt
 
@@ -158,6 +166,40 @@ def source_status(session: Session = Depends(get_session)) -> list[dict[str, obj
     ]
 
 
+@app.get("/api/v1/classifications")
+def classifications(
+    accepted: bool | None = None,
+    reason: str | None = None,
+    limit: int = Query(default=100, ge=1, le=500),
+    session: Session = Depends(get_session),
+) -> dict[str, object]:
+    query = select(ClassificationDecision, RawMessage).join(
+        RawMessage, RawMessage.id == ClassificationDecision.message_id
+    )
+    if accepted is not None:
+        query = query.where(ClassificationDecision.accepted == accepted)
+    if reason:
+        query = query.where(ClassificationDecision.reason == reason)
+    rows = session.execute(
+        query.order_by(ClassificationDecision.created_at.desc()).limit(limit)
+    ).all()
+    return {
+        "items": [
+            {
+                "message_id": decision.message_id,
+                "accepted": decision.accepted,
+                "reason": decision.reason,
+                "extraction": decision.extraction_json,
+                "excerpt": safe_excerpt(message.text),
+                "permalink": message.permalink,
+                "created_at": decision.created_at,
+            }
+            for decision, message in rows
+        ],
+        "count": len(rows),
+    }
+
+
 @app.get("/api/v1/metrics")
 def metric_snapshot(session: Session = Depends(get_session)) -> dict[str, object]:
     database_counts = {
@@ -168,6 +210,10 @@ def metric_snapshot(session: Session = Depends(get_session)) -> dict[str, object
         )
         or 0,
         "processing_errors": session.scalar(select(func.count()).select_from(ProcessingError)) or 0,
+        "classification_decisions": session.scalar(
+            select(func.count()).select_from(ClassificationDecision)
+        )
+        or 0,
         "queue_size": session.scalar(
             select(func.count()).select_from(RawMessage).where(RawMessage.candidate_score.is_(None))
         )

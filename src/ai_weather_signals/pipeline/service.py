@@ -11,6 +11,7 @@ from ..enums import AssertionType
 from ..metrics import metrics
 from ..models import (
     Attachment,
+    ClassificationDecision,
     EventSignal,
     GeocodeResult,
     IngestRun,
@@ -148,6 +149,14 @@ def ingest_once(
                 if not filtered.candidate:
                     continue
                 run.candidate_count += 1
+                existing_decision = session.scalar(
+                    select(ClassificationDecision.id).where(
+                        ClassificationDecision.message_id == message.id,
+                        ClassificationDecision.model_version_id == model_version.id,
+                    )
+                )
+                if existing_decision is not None:
+                    continue
                 remaining = (
                     max(0.0, deadline_monotonic - time.monotonic())
                     if deadline_monotonic is not None
@@ -160,12 +169,25 @@ def ingest_once(
                     timeout_seconds=remaining,
                 )
                 run.classified_count += 1
+                decision = ClassificationDecision(
+                    message_id=message.id,
+                    model_version_id=model_version.id,
+                    is_weather_candidate=extraction.is_weather_candidate,
+                    accepted=False,
+                    reason="llm_rejected",
+                    extraction_json=extraction.model_dump(mode="json"),
+                )
+                session.add(decision)
                 if not extraction.is_weather_candidate:
+                    continue
+                if extraction.assertion_type == AssertionType.OFFICIAL and "official" not in source.tags:
+                    decision.reason = "untrusted_official"
                     continue
                 match = geocoder.resolve(extraction.place_name, source.region)
                 if match is None:
                     match = geocoder.resolve(message.text, source.region)
                 if match is None:
+                    decision.reason = "unresolved_place"
                     session.add(
                         ProcessingError(
                             stage="geocode",
@@ -176,6 +198,8 @@ def ingest_once(
                         )
                     )
                     continue
+                decision.accepted = True
+                decision.reason = "accepted"
                 signal = WeatherSignal(
                     message_id=message.id,
                     model_version_id=model_version.id,
@@ -300,34 +324,50 @@ def aggregate(session: Session, weights: dict[str, float], now: datetime | None 
         session.add(EventSignal(event_id=event.id, signal_id=signal.id, contribution=signal.llm_confidence))
         changed.add(event.id)
     session.flush()
-    for event_id in changed:
+    active_event_ids = set(
+        session.scalars(
+            select(WeatherEvent.id).where(WeatherEvent.last_seen_at >= now - timedelta(hours=12))
+        )
+    )
+    for event_id in changed | active_event_ids:
         event = session.get(WeatherEvent, event_id)
         assert event is not None
         linked = [link.signal for link in event.links]
-        authors = {item.message.author_hash or item.message.id for item in linked}
-        platforms = {item.message.source.adapter for item in linked}
-        official = any(item.assertion_type == AssertionType.OFFICIAL for item in linked)
-        copies = sum(item.is_copy for item in linked) / max(len(linked), 1)
+        by_author: dict[str, WeatherSignal] = {}
+        for item in linked:
+            author = item.message.author_hash or item.message.id
+            current = by_author.get(author)
+            if current is None or item.observed_at > current.observed_at:
+                by_author[author] = item
+        independent = list(by_author.values())
+        platforms = {item.message.source.adapter for item in independent}
+        official = any(
+            item.assertion_type == AssertionType.OFFICIAL and "official" in item.message.source.tags
+            for item in independent
+        )
+        copies = sum(item.is_copy for item in independent) / max(len(independent), 1)
         input_values = ConfidenceInputs(
-            llm=sum(item.llm_confidence for item in linked) / len(linked),
-            geography=sum(item.geocode.precision for item in linked if item.geocode) / len(linked),
-            time=sum(item.time_precision for item in linked) / len(linked),
-            source_trust=sum(item.message.source.trust for item in linked) / len(linked),
+            llm=sum(item.llm_confidence for item in independent) / len(independent),
+            geography=sum(item.geocode.precision for item in independent if item.geocode)
+            / len(independent),
+            time=sum(item.time_precision for item in independent) / len(independent),
+            source_trust=sum(item.message.source.trust for item in independent) / len(independent),
             personal_weight=sum(
-                1.0 if item.assertion_type == AssertionType.PERSONAL_CURRENT else 0.75 for item in linked
+                1.0 if item.assertion_type == AssertionType.PERSONAL_CURRENT else 0.75
+                for item in independent
             )
-            / len(linked),
-            independent_authors=len(authors),
+            / len(independent),
+            independent_authors=len(independent),
             platforms=len(platforms),
-            media=any(item.has_photo or item.has_video for item in linked),
+            media=any(item.has_photo or item.has_video for item in independent),
             official=official,
             copy_ratio=copies,
         )
-        event.independent_authors = len(authors)
+        event.independent_authors = len(independent)
         event.platform_count = len(platforms)
         event.official_confirmation = official
         event.confidence = confidence_score(input_values, weights)
-        event.status = event_status(event.confidence, len(authors), len(platforms), official)
+        event.status = event_status(event.confidence, len(independent), len(platforms), official)
     for event in session.scalars(
         select(WeatherEvent).where(
             WeatherEvent.last_seen_at < now - timedelta(hours=12), WeatherEvent.status != "expired"

@@ -5,6 +5,7 @@
 - `raw_messages`: unique `(source_id, external_id)`, permalink, HMAC author, optional text, text hash and timestamps.
 - `attachments`: remote links and non-sensitive media metadata; media is not downloaded.
 - `model_versions`: model name, prompt/schema versions and prompt SHA-256.
+- `classification_decisions`: immutable structured LLM output, acceptance state and rejection reason per message/model pair.
 - `weather_signals`: validated extraction, evidence flags, confidence and copy marker.
 - `geocode_results`: stable city ID, optional GeoNames ID, coordinates, method and precision.
 - `weather_events` / `event_signals`: aggregate state and auditable many-to-many evidence.

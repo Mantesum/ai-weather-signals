@@ -24,7 +24,7 @@ sources:
     store_text: true
     env_token: MASTODON_ACCESS_TOKEN
     options:
-      hashtag: weather
+      hashtags: [weather, rain, snow, storm, meteo, погода, дождь, снег]
       limit: 40
   - name: example-official-rss
     adapter: rss

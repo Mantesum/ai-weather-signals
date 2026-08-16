@@ -13,4 +13,10 @@ def test_initial_migration(tmp_path: Path, monkeypatch) -> None:
     config.set_main_option("sqlalchemy.url", database_url)
     command.upgrade(config, "head")
     tables = set(inspect(create_engine(f"sqlite:///{database.as_posix()}")).get_table_names())
-    assert {"sources", "raw_messages", "weather_signals", "weather_events"} <= tables
+    assert {
+        "sources",
+        "raw_messages",
+        "weather_signals",
+        "weather_events",
+        "classification_decisions",
+    } <= tables

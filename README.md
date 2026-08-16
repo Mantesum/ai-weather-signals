@@ -49,6 +49,8 @@ uv run weather-signals worker --interval 300
 
 Open `http://127.0.0.1:8000/api/v1/docs`. Try `/api/v1/events?city_id=moscow`, `/api/v1/events?lat=55.75&lon=37.62&radius_km=50`, `/health`, `/readiness`, and `/version`.
 
+Structured LLM decisions, including rejections, are available from the local read-only `/api/v1/classifications` audit endpoint. Filter by `accepted` or `reason` when reviewing a pilot.
+
 For a no-network/no-model smoke check, all tests and fixtures use the deterministic offline classifier:
 
 ```powershell

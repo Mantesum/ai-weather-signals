@@ -6,8 +6,17 @@ Recommended Windows runtime is Ollama bound to `127.0.0.1`. This deployment uses
 LLM_PROVIDER=ollama
 LLM_BASE_URL=http://127.0.0.1:11434
 LLM_MODEL=qwen3.5:9b
-LLM_TIMEOUT_SECONDS=60
+LLM_TIMEOUT_SECONDS=45
+LLM_MAX_INPUT_CHARS=2000
 ```
+
+Ollama requests keep the model loaded for 15 minutes, cap input at 2,000 characters and generation at
+160 tokens. A timed-out request is not repeated; invalid structured output may be retried once.
+
+On the audited Tesla V100 Windows host, Ollama's default CUDA 13 runner omits compute capability 7.0.
+Forcing its bundled CUDA 12 runner loaded the model into VRAM but caused a driver-level GPU loss, so the
+deployment remains in automatic CPU mode until Windows is rebooted and a stable sm_70-capable runtime is
+validated. Do not force `OLLAMA_LLM_LIBRARY` on that host without a recovery window.
 
 `llama.cpp` remains supported through the OpenAI-compatible provider:
 

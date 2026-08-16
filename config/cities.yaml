@@ -62,6 +62,12 @@ cities:
   - {id: dubai, name: Dubai, country: AE, latitude: 25.2048, longitude: 55.2708, aliases: [Дубай]}
   - {id: bangkok, name: Bangkok, country: TH, latitude: 13.7563, longitude: 100.5018, aliases: [Бангкок]}
   - {id: singapore, name: Singapore, country: SG, latitude: 1.3521, longitude: 103.8198, aliases: [Сингапур]}
+  # Additions validated against the GeoNames gazetteer after the Mastodon pilot.
+  - {id: sheffield, name: Sheffield, country: GB, latitude: 53.38297, longitude: -1.46590, geonames_id: 2638077, aliases: [Шеффилд]}
+  - {id: bristol, name: Bristol, country: GB, latitude: 51.45523, longitude: -2.59665, aliases: [Бристоль, Horfield, Filton]}
+  - {id: galway, name: Galway, country: IE, latitude: 53.27245, longitude: -9.05095, aliases: [Голуэй, Gaillimh]}
+  - {id: clifden, name: Clifden, country: IE, latitude: 53.48907, longitude: -10.01910, geonames_id: 2965449, aliases: [Клифден]}
+  - {id: apache-junction, name: Apache Junction, country: US, latitude: 33.41505, longitude: -111.54958, aliases: [Апачи-Джанкшен]}
   - {id: jakarta, name: Jakarta, country: ID, latitude: -6.2088, longitude: 106.8456, aliases: [Джакарта]}
   - {id: manila, name: Manila, country: PH, latitude: 14.5995, longitude: 120.9842, aliases: [Манила]}
   - {id: sydney, name: Sydney, country: AU, latitude: -33.8688, longitude: 151.2093, aliases: [Сидней]}

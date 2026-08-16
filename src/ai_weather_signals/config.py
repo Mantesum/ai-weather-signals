@@ -18,7 +18,8 @@ class Settings(BaseSettings):
     llm_model: str = "qwen3.5:9b"
     llm_api_key: str = ""
     llm_enabled: bool = True
-    llm_timeout_seconds: float = Field(default=90, gt=0, le=300)
+    llm_timeout_seconds: float = Field(default=45, gt=0, le=300)
+    llm_max_input_chars: int = Field(default=2000, ge=200, le=10000)
     author_hash_salt: str = Field(default="development-only-change-me", min_length=8)
     log_level: str = "INFO"
     raw_text_retention_days: int = Field(default=30, ge=0)

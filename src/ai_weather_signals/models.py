@@ -115,6 +115,23 @@ class WeatherSignal(Base):
     geocode: Mapped["GeocodeResult | None"] = relationship(cascade="all, delete-orphan")
 
 
+class ClassificationDecision(Base):
+    __tablename__ = "classification_decisions"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    message_id: Mapped[str] = mapped_column(
+        ForeignKey("raw_messages.id", ondelete="CASCADE"), index=True
+    )
+    model_version_id: Mapped[int] = mapped_column(ForeignKey("model_versions.id"), index=True)
+    is_weather_candidate: Mapped[bool] = mapped_column(Boolean)
+    accepted: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    reason: Mapped[str] = mapped_column(String(64), index=True)
+    extraction_json: Mapped[dict[str, object]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+    __table_args__ = (
+        UniqueConstraint("message_id", "model_version_id", name="uq_classification_message_model"),
+    )
+
+
 class GeocodeResult(Base):
     __tablename__ = "geocode_results"
     id: Mapped[int] = mapped_column(primary_key=True)

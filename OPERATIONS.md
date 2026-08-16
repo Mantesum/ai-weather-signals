@@ -10,7 +10,7 @@
 
 ## Tagged update
 
-`scripts/update.ps1 -Version v0.2.0` refuses a dirty tree, fetches tags, verifies the tag exists, backs up PostgreSQL, switches to that tag without resetting files, syncs locked dependencies, migrates, tests and runs readiness. If it fails, keep services stopped, check `logs/update.log`, switch back to the previous tag/branch, sync, migrate if compatible, and restore the saved dump when a migration is not backward compatible.
+`scripts/update.ps1 -Version v0.3.0` refuses a dirty tree, fetches tags, verifies the tag exists, backs up PostgreSQL, switches to that tag without resetting files, syncs locked dependencies, migrates, tests and runs readiness. If it fails, keep services stopped, check `logs/update.log`, switch back to the previous tag/branch, sync, migrate if compatible, and restore the saved dump when a migration is not backward compatible.
 
 Never auto-deploy arbitrary `main`. Sign releases and publish migration compatibility notes in future releases.
 
