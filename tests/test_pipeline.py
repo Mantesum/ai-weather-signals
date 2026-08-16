@@ -1,3 +1,4 @@
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -5,7 +6,7 @@ from sqlalchemy import func, select
 
 from ai_weather_signals.adapters.base import Adapter, AdapterResult
 from ai_weather_signals.config import Settings
-from ai_weather_signals.models import RawMessage, WeatherEvent, WeatherSignal
+from ai_weather_signals.models import IngestRun, RawMessage, Source, WeatherEvent, WeatherSignal
 from ai_weather_signals.pipeline.confidence import load_weights
 from ai_weather_signals.pipeline.geocode import LocalGeocoder
 from ai_weather_signals.pipeline.offline import OfflineClassifier
@@ -42,3 +43,24 @@ def test_full_pipeline_is_idempotent(session) -> None:
     assert session.scalar(select(func.count()).select_from(WeatherSignal)) == 1
     aggregate(session, load_weights(Path("config/confidence.yaml")))
     assert session.scalar(select(func.count()).select_from(WeatherEvent)) == 1
+
+
+def test_expired_time_budget_does_not_advance_cursor(session) -> None:
+    definition = SourceDefinition(
+        name="fixture", adapter="rss", target="https://example.test/rss", region="Moscow"
+    )
+    settings = Settings(database_url="sqlite://", llm_enabled=False, author_hash_salt="safe-test-salt")
+    run = ingest_once(
+        session,
+        definition,
+        FixtureAdapter(definition),
+        OfflineClassifier(),
+        LocalGeocoder.from_yaml(Path("config/cities.yaml")),
+        settings,
+        deadline_monotonic=time.monotonic() - 1,
+    )
+    source = session.scalar(select(Source).where(Source.name == "fixture"))
+    assert isinstance(run, IngestRun)
+    assert run.status == "partial"
+    assert source is not None and source.cursor is None
+    assert session.scalar(select(func.count()).select_from(RawMessage)) == 0

@@ -14,7 +14,7 @@ from .pipeline.confidence import load_weights
 from .pipeline.geocode import LocalGeocoder
 from .pipeline.llm import LLMClassifier
 from .pipeline.offline import OfflineClassifier
-from .pipeline.service import Classifier, aggregate, ingest_once
+from .pipeline.service import Classifier, aggregate, ingest_once, reconcile_source
 from .schemas import SourceDefinition
 from .source_config import load_sources, set_source_enabled, upsert_source
 
@@ -104,14 +104,27 @@ def sources_disable(name: str) -> None:
 def collect(
     offline: bool = typer.Option(False, help="Use deterministic fixture classifier, not the LLM"),
     force: bool = typer.Option(False, help="Ignore the configured polling interval"),
+    max_runtime_seconds: int | None = typer.Option(
+        None, min=1, help="Stop safely after this many seconds without advancing a partial source cursor"
+    ),
 ) -> None:
     settings = get_settings()
+    definitions = load_sources(settings.source_config_path)
+    if not offline and any(item.enabled for item in definitions) and not settings.llm_enabled:
+        typer.echo("LLM_ENABLED is false; enable an LLM or use --offline.", err=True)
+        raise typer.Exit(code=2)
     geocoder = LocalGeocoder.from_yaml(settings.city_config_path)
     classifier: Classifier = OfflineClassifier() if offline else LLMClassifier(settings)
+    deadline = time.monotonic() + max_runtime_seconds if max_runtime_seconds is not None else None
     with SessionLocal() as session:
-        for definition in load_sources(settings.source_config_path):
+        for definition in definitions:
             if not definition.enabled:
+                reconcile_source(session, definition)
+                session.commit()
                 continue
+            if deadline is not None and time.monotonic() >= deadline:
+                typer.echo("Collection time budget exhausted before the next source.")
+                break
             current = session.scalar(select(Source).where(Source.name == definition.name))
             if (
                 not force
@@ -122,7 +135,15 @@ def collect(
             ):
                 typer.echo(f"{definition.name}: not due")
                 continue
-            run = ingest_once(session, definition, build_adapter(definition), classifier, geocoder, settings)
+            run = ingest_once(
+                session,
+                definition,
+                build_adapter(definition),
+                classifier,
+                geocoder,
+                settings,
+                deadline_monotonic=deadline,
+            )
             typer.echo(
                 f"{definition.name}: {run.status}, fetched={run.fetched_count}, classified={run.classified_count}, errors={run.error_count}"
             )
@@ -137,9 +158,14 @@ def aggregate_command() -> None:
 
 
 @app.command("worker")
-def worker(offline: bool = False, once: bool = False, interval: int = 300) -> None:
+def worker(
+    offline: bool = False,
+    once: bool = False,
+    interval: int = 300,
+    max_runtime_seconds: int | None = None,
+) -> None:
     while True:
-        collect(offline=offline, force=False)
+        collect(offline=offline, force=False, max_runtime_seconds=max_runtime_seconds)
         aggregate_command()
         if once:
             return

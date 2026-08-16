@@ -11,7 +11,7 @@ sources:
     store_text: true
     options:
       collections: [app.bsky.feed.post]
-      max_messages: 200
+      max_messages: 100
       read_timeout_seconds: 10
   - name: mastodon-weather
     adapter: mastodon

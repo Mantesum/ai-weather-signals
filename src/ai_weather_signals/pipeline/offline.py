@@ -24,7 +24,13 @@ class OfflineClassifier:
 
     prompt_hash = "offline-rules-v1"
 
-    def classify(self, text: str, source_region: str | None, published_at: str) -> LLMExtraction:
+    def classify(
+        self,
+        text: str,
+        source_region: str | None,
+        published_at: str,
+        timeout_seconds: float | None = None,
+    ) -> LLMExtraction:
         value = normalized_text(text)
         assertion = AssertionType.PERSONAL_CURRENT
         candidate = True

@@ -33,7 +33,13 @@ class Classifier(Protocol):
     @property
     def prompt_hash(self) -> str: ...
 
-    def classify(self, text: str, source_region: str | None, published_at: str) -> LLMExtraction: ...
+    def classify(
+        self,
+        text: str,
+        source_region: str | None,
+        published_at: str,
+        timeout_seconds: float | None = None,
+    ) -> LLMExtraction: ...
 
 
 def reconcile_source(session: Session, definition: SourceDefinition) -> Source:
@@ -115,6 +121,7 @@ def ingest_once(
     classifier: Classifier,
     geocoder: LocalGeocoder,
     settings: Settings,
+    deadline_monotonic: float | None = None,
 ) -> IngestRun:
     source = reconcile_source(session, definition)
     run = IngestRun(source_id=source.id)
@@ -125,7 +132,11 @@ def ingest_once(
         result = adapter.fetch(source.cursor)
         run.fetched_count = len(result.messages)
         model_version = _model_version(session, settings, classifier)
+        time_budget_exhausted = False
         for item in result.messages:
+            if deadline_monotonic is not None and time.monotonic() >= deadline_monotonic:
+                time_budget_exhausted = True
+                break
             try:
                 message, exact_duplicate = _persist_message(session, source, item, settings)
                 if not message.text or session.scalar(
@@ -137,13 +148,23 @@ def ingest_once(
                 if not filtered.candidate:
                     continue
                 run.candidate_count += 1
+                remaining = (
+                    max(0.0, deadline_monotonic - time.monotonic())
+                    if deadline_monotonic is not None
+                    else None
+                )
                 extraction = classifier.classify(
-                    message.text, source.region, message.published_at.isoformat()
+                    message.text,
+                    source.region,
+                    message.published_at.isoformat(),
+                    timeout_seconds=remaining,
                 )
                 run.classified_count += 1
                 if not extraction.is_weather_candidate:
                     continue
                 match = geocoder.resolve(extraction.place_name, source.region)
+                if match is None:
+                    match = geocoder.resolve(message.text, source.region)
                 if match is None:
                     session.add(
                         ProcessingError(
@@ -194,10 +215,16 @@ def ingest_once(
                         message=str(error)[:2000],
                     )
                 )
-        source.cursor = result.cursor
-        source.last_success_at = datetime.now(UTC)
-        source.last_error = None
-        run.status = "success"
+        if deadline_monotonic is not None and time.monotonic() >= deadline_monotonic:
+            time_budget_exhausted = True
+        if time_budget_exhausted:
+            run.status = "partial"
+            source.last_error = "Time budget exhausted; source cursor was not advanced."
+        else:
+            source.cursor = result.cursor
+            source.last_success_at = datetime.now(UTC)
+            source.last_error = None
+            run.status = "success"
         metrics.inc("messages_fetched", run.fetched_count)
         metrics.inc("messages_classified", run.classified_count)
     except Exception as error:

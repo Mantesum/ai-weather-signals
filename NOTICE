@@ -4,8 +4,8 @@ Copyright 2026 ProjectEOL contributors
 This product can be configured to use GeoNames data, licensed under CC BY 4.0:
 https://www.geonames.org/
 
-The recommended Qwen3-8B model is distributed separately under Apache-2.0.
-llama.cpp is distributed separately under the MIT License.
+Recommended Ollama models are distributed separately under their accompanying licenses.
+Ollama and llama.cpp are distributed separately under their respective licenses.
 
 Provider content remains subject to provider and original-author terms. No model
 weights, GeoNames dataset, or third-party messages are included in this repository.

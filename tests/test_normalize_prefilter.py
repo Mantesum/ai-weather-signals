@@ -12,3 +12,9 @@ def test_multilingual_prefilter() -> None:
     assert prefilter("У нас в Москве сильный дождь", {"москва"}).candidate
     assert prefilter("Heavy snow in Chicago right now", {"chicago"}).candidate
     assert not prefilter("Обычный рабочий день", {"москва"}).candidate
+
+
+def test_english_weather_terms_do_not_match_inside_words() -> None:
+    assert not prefilter("I can feel the voice banks flowing through my veins").candidate
+    assert not prefilter("It secured a liquor license during its time off").candidate
+    assert not prefilter("Ukraine has lost export revenue").candidate

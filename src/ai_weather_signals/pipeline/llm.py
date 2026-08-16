@@ -1,4 +1,5 @@
 import json
+import time
 from hashlib import sha256
 from typing import Any
 
@@ -12,8 +13,10 @@ PROMPT_VERSION = "weather-extraction-v1"
 SYSTEM_PROMPT = """You classify a public message about actual weather. Return only schema-valid JSON.
 An event is a candidate only for a current personal/probable personal observation or an official current report.
 Reject forecasts, old events, news retellings, questions, negations, jokes, metaphors, ads, spam and copies.
-Infer a place only when stated or strongly implied by source region. Use ISO-8601 with timezone for observed_at.
-Do not include personal data. /no_think"""
+Copy an explicitly stated city or locality into place_name. Otherwise infer a place only when strongly implied
+by source_region; use null when neither is available. Use ISO-8601 with timezone for observed_at.
+The intensity, time_precision, and confidence fields are decimal scores from 0.0 to 1.0 only—never
+percentages, durations, counts, or a 1-to-10 scale. Do not include personal data. /no_think"""
 
 
 class LLMClassifier:
@@ -25,7 +28,13 @@ class LLMClassifier:
     def prompt_hash(self) -> str:
         return sha256(SYSTEM_PROMPT.encode()).hexdigest()
 
-    def classify(self, text: str, source_region: str | None, published_at: str) -> LLMExtraction:
+    def classify(
+        self,
+        text: str,
+        source_region: str | None,
+        published_at: str,
+        timeout_seconds: float | None = None,
+    ) -> LLMExtraction:
         schema = LLMExtraction.model_json_schema()
         messages: list[dict[str, str]] = [
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -37,30 +46,54 @@ class LLMClassifier:
                 ),
             },
         ]
-        payload: dict[str, Any] = {
-            "model": self.settings.llm_model,
-            "messages": messages,
-            "temperature": 0.1,
-            "seed": 42,
-            "max_tokens": 500,
-            "response_format": {
-                "type": "json_schema",
-                "json_schema": {"name": "weather_signal", "strict": True, "schema": schema},
-            },
-        }
+        if self.settings.llm_provider == "ollama":
+            url = f"{self.settings.llm_base_url.rstrip('/').removesuffix('/v1')}/api/chat"
+            payload: dict[str, Any] = {
+                "model": self.settings.llm_model,
+                "messages": messages,
+                "stream": False,
+                "think": False,
+                "format": schema,
+                "options": {"temperature": 0.1, "seed": 42, "num_predict": 500},
+            }
+        else:
+            url = f"{self.settings.llm_base_url.rstrip('/')}/chat/completions"
+            payload = {
+                "model": self.settings.llm_model,
+                "messages": messages,
+                "temperature": 0.1,
+                "seed": 42,
+                "max_tokens": 500,
+                "response_format": {
+                    "type": "json_schema",
+                    "json_schema": {"name": "weather_signal", "strict": True, "schema": schema},
+                },
+            }
         headers = (
             {"Authorization": f"Bearer {self.settings.llm_api_key}"} if self.settings.llm_api_key else {}
         )
+        deadline = time.monotonic() + timeout_seconds if timeout_seconds is not None else None
         last_error: Exception | None = None
         for _attempt in range(2):
+            remaining = deadline - time.monotonic() if deadline is not None else None
+            if remaining is not None and remaining <= 0:
+                break
             try:
                 response = self.client.post(
-                    f"{self.settings.llm_base_url.rstrip('/')}/chat/completions",
+                    url,
                     json=payload,
                     headers=headers,
+                    timeout=min(self.settings.llm_timeout_seconds, remaining)
+                    if remaining is not None
+                    else self.settings.llm_timeout_seconds,
                 )
                 response.raise_for_status()
-                content = response.json()["choices"][0]["message"]["content"]
+                body = response.json()
+                content = (
+                    body["message"]["content"]
+                    if self.settings.llm_provider == "ollama"
+                    else body["choices"][0]["message"]["content"]
+                )
                 return LLMExtraction.model_validate_json(content)
             except (httpx.HTTPError, KeyError, TypeError, ValueError) as error:
                 last_error = error
@@ -68,8 +101,12 @@ class LLMClassifier:
                 messages.append(
                     {
                         "role": "user",
-                        "content": "Previous output was invalid. Return one schema-valid JSON object only.",
+                        "content": (
+                            "Previous output was invalid. Return one schema-valid JSON object only. "
+                            "All score fields must be decimal numbers between 0.0 and 1.0."
+                        ),
                     }
                 )
+                payload["messages"] = messages
         metrics.inc("llm_exhausted_retries")
         raise RuntimeError(f"LLM returned no valid extraction: {last_error}")

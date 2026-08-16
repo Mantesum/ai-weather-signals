@@ -21,13 +21,13 @@ uv run alembic upgrade head
 uv run weather-signals sources check
 ```
 
-Install a current Windows CUDA build of `llama.cpp`, download an Apache-2.0 Qwen3-8B GGUF quantization from a source you trust, record its SHA-256, and start locally:
+On Windows, use an existing local Ollama installation and a multilingual model such as `qwen3.5:9b`:
 
 ```powershell
-llama-server.exe -m C:\models\Qwen3-8B-Q4_K_M.gguf -ngl 99 -c 4096 --host 127.0.0.1 --port 8080
+ollama run qwen3.5:9b
 ```
 
-The tested hardware profile is Tesla V100-SXM2 16 GB, Windows driver 582.16. Keep speculative decoding off on V100 initially. Q4_K_M leaves comfortable VRAM for a 4k context; Q5_K_M may fit but must be benchmarked. The prompt contains `/no_think`; JSON is constrained both by llama.cpp and Pydantic.
+Set `LLM_PROVIDER=ollama`, `LLM_BASE_URL=http://127.0.0.1:11434`, and `LLM_MODEL=qwen3.5:9b`. The native integration disables thinking and constrains output with the extraction JSON schema. The OpenAI-compatible llama.cpp path remains available; see [LLM.md](LLM.md).
 
 Add and enable only a source whose API terms and retention rules you have reviewed:
 
@@ -37,6 +37,8 @@ uv run weather-signals sources list
 uv run weather-signals collect --force
 uv run weather-signals aggregate
 ```
+
+For a bounded pilot, add `--max-runtime-seconds 840`. If the budget expires, the run is recorded as partial and its source cursor is not advanced.
 
 Run API and worker in separate terminals:
 
