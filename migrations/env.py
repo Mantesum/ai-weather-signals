@@ -5,12 +5,14 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from ai_weather_signals import models  # noqa: F401
+from ai_weather_signals.config import get_settings
 from ai_weather_signals.db import Base
 
 config = context.config
 if config.config_file_name:
     fileConfig(config.config_file_name)
-config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL", config.get_main_option("sqlalchemy.url")))
+database_url = os.getenv("DATABASE_URL") or get_settings().database_url
+config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 target_metadata = Base.metadata
 
 

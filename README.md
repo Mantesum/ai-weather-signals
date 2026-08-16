@@ -61,7 +61,7 @@ Versioned definitions live in `config/sources.yaml`; mutable cursor, last succes
 
 ## Operations
 
-Use `scripts/start-api.ps1` and `scripts/start-worker.ps1` interactively. `scripts/register-tasks.ps1` installs two Task Scheduler jobs for the current user. Schedule `uv run weather-signals purge-retention` daily. Back up and restore with `scripts/backup.ps1` and `scripts/restore.ps1`; the latter requires an explicit dump path. Updates use tagged releases and refuse a dirty working tree; see [OPERATIONS.md](OPERATIONS.md) before production-like use.
+Use `scripts/start-api.ps1` and `scripts/start-worker.ps1` interactively. `scripts/register-tasks.ps1` installs two Task Scheduler jobs for the current user; manage them with `scripts/enable-services.ps1`, `scripts/disable-services.ps1`, and `scripts/restart-services.ps1`. Schedule `uv run weather-signals purge-retention` daily. Back up and restore with `scripts/backup.ps1` and `scripts/restore.ps1`; the latter requires an explicit dump path. Updates use tagged releases and refuse a dirty working tree; see [OPERATIONS.md](OPERATIONS.md) before production-like use.
 
 Linux/VM uses the same `.env`, Compose PostgreSQL, migrations, CLI and API. Run the two long-lived commands under systemd or another supervisor; see [OPERATIONS.md](OPERATIONS.md).
 
