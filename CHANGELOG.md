@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.1 - 2026-08-20
 
 - Add fresh CGTN China/World RSS, Yahoo News RSS and bounded multilingual Bing News RSS discovery.
 - Add China-focused discovery across `weather.com.cn`, Xinhua, China News, People's Daily, CGTN and China Daily.
