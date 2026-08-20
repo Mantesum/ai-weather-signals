@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add fresh CGTN China/World RSS, Yahoo News RSS and bounded multilingual Bing News RSS discovery.
+- Add China-focused discovery across `weather.com.cn`, Xinhua, China News, People's Daily, CGTN and China Daily.
+- Add bounded MSN weather discovery and replace the retired Reuters Environment RSS URL with fresh,
+  Reuters-domain-only climate and severe-weather discovery.
+
 ## 0.4.0 - 2026-08-20
 
 - Expand bounded Google News RSS discovery from 46 to 97 queries across Southeast Asia, Africa,

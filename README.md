@@ -62,7 +62,7 @@ uv run mypy src
 
 ## Source configuration
 
-Versioned definitions live in `config/sources.yaml`; mutable cursor, last success and last error live in PostgreSQL. Secrets are named by `env_token` and read from the process environment or the ignored local `.env`. See [SOURCES.md](SOURCES.md). The 187 city anchors in `config/cities.yaml` filter shared streams and provide fallback geocoding; they do not cause separate requests per city. Nineteen bounded Google News groups use 97 queries with equal one-hour regional intervals, covering Africa, both Americas, Europe, the Middle East, South/Central/East/Southeast Asia and Oceania/Pacific.
+Versioned definitions live in `config/sources.yaml`; mutable cursor, last success and last error live in PostgreSQL. Secrets are named by `env_token` and read from the process environment or the ignored local `.env`. See [SOURCES.md](SOURCES.md). The 187 city anchors in `config/cities.yaml` filter shared streams and provide fallback geocoding; they do not cause separate requests per city. Twenty-one bounded Google News groups use 108 queries with equal one-hour intervals, covering Africa, both Americas, Europe, the Middle East, South/Central/East/Southeast Asia and Oceania/Pacific, plus China-local and Reuters discovery. Current CGTN, Yahoo and Bing RSS sources provide additional independent coverage, including MSN-restricted Bing RSS searches.
 
 ## Operations
 

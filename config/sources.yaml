@@ -438,6 +438,30 @@ sources:
     - '(typhoon OR "heavy rain" OR flood OR heatwave) (Japan OR China OR Korea OR Taiwan) when:1d'
     - '(blizzard OR "heavy snow" OR avalanche OR "dust storm") (Japan OR China OR Mongolia) when:1d'
     - '(storm surge OR coastal flooding OR high waves) (Japan OR China OR Korea OR Taiwan) when:1d'
+- name: google-news-china-local-media
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: China
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, china, local-media, multilingual]
+  store_text: true
+  options:
+    hl: zh-CN
+    gl: CN
+    ceid: CN:zh-Hans
+    total_limit: 20
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(暴雨 OR 台风 OR 洪水 OR 山洪 OR 高温) 中国 (site:weather.com.cn OR site:news.cn) when:1d'
+    - '(强降雨 OR 内涝 OR 山体滑坡 OR 泥石流) 中国 (site:chinanews.com.cn OR site:people.com.cn) when:1d'
+    - '(寒潮 OR 暴雪 OR 冰冻 OR 沙尘暴) 中国 (site:weather.com.cn OR site:news.cn) when:1d'
+    - '(气象预警 OR 红色预警 OR 橙色预警) 中国 (site:weather.com.cn OR site:news.cn) when:1d'
+    - '(台风 OR 暴雨 OR 洪水) (香港 OR 澳门 OR 台湾) site:news.cn when:1d'
+    - '(China flood OR typhoon OR heatwave OR blizzard) (site:cgtn.com OR site:chinadaily.com.cn) when:1d'
 - name: google-news-central-asia-caucasus
   adapter: google_news
   enabled: true
@@ -562,17 +586,90 @@ sources:
   store_text: true
   options:
     limit: 15
-- name: reuters-climate-disaster
-  adapter: rss
-  enabled: false
-  target: http://feeds.reuters.com/reuters/environment
+- name: cgtn-china-world-rss
+  adapter: multi_rss
+  enabled: true
+  target: https://www.cgtn.com/subscribe/rss/
+  region: China
   language: en
-  poll_interval_seconds: 1800
-  trust: 0.72
-  tags: [news, global, climate, retired-feed]
+  poll_interval_seconds: 3600
+  trust: 0.68
+  tags: [news, china, local-media, rss]
   store_text: true
   options:
-    limit: 15
+    total_limit: 40
+    per_feed_limit: 25
+    feeds:
+    - https://www.cgtn.com/subscribe/rss/section/china.xml
+    - https://www.cgtn.com/subscribe/rss/section/world.xml
+- name: yahoo-news-rss
+  adapter: rss
+  enabled: true
+  target: https://news.yahoo.com/rss/
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.62
+  tags: [news, aggregator, global, rss, yahoo]
+  store_text: true
+  options:
+    limit: 50
+- name: bing-news-weather
+  adapter: multi_rss
+  enabled: true
+  target: https://www.bing.com/news/search
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.62
+  tags: [news, search, aggregator, global, rss, microsoft]
+  store_text: true
+  options:
+    total_limit: 40
+    per_feed_limit: 12
+    feeds:
+    - 'https://www.bing.com/news/search?q=weather%20warning%20storm%20flood%20cyclone%20hurricane&format=rss&setlang=en-US'
+    - 'https://www.bing.com/news/search?q=wildfire%20smoke%20heatwave%20drought&format=rss&setlang=en-US'
+    - 'https://www.bing.com/news/search?q=blizzard%20heavy%20snow%20freezing%20rain&format=rss&setlang=en-US'
+    - 'https://www.bing.com/news/search?q=monsoon%20landslide%20heavy%20rain&format=rss&setlang=en-US'
+    - 'https://www.bing.com/news/search?q=%E4%B8%AD%E5%9B%BD%20%E6%9A%B4%E9%9B%A8%20%E5%8F%B0%E9%A3%8E%20%E6%B4%AA%E6%B0%B4%20%E9%AB%98%E6%B8%A9&format=rss&setlang=zh-CN'
+- name: msn-weather-discovery
+  adapter: multi_rss
+  enabled: true
+  target: https://www.bing.com/news/search
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.60
+  tags: [news, search, aggregator, global, rss, msn, microsoft]
+  store_text: true
+  options:
+    total_limit: 15
+    per_feed_limit: 6
+    feeds:
+    - 'https://www.bing.com/news/search?q=site%3Amsn.com%20weather%20storm%20flood%20tornado%20hurricane&format=rss&setlang=en-US'
+    - 'https://www.bing.com/news/search?q=site%3Amsn.com%20wildfire%20heatwave%20drought%20smoke&format=rss&setlang=en-US'
+    - 'https://www.bing.com/news/search?q=site%3Amsn.com%20blizzard%20snowstorm%20freezing%20rain%20avalanche&format=rss&setlang=en-US'
+    - 'https://www.bing.com/news/search?q=site%3Amsn.com%20cyclone%20typhoon%20monsoon%20landslide&format=rss&setlang=en-US'
+- name: reuters-climate-disaster
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.72
+  tags: [news, search, global, climate, publisher-reuters]
+  store_text: true
+  options:
+    hl: en-US
+    gl: US
+    ceid: US:en
+    total_limit: 20
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - 'site:reuters.com (weather OR storm OR flood OR tornado OR hurricane) when:7d'
+    - 'site:reuters.com (climate OR heatwave OR drought OR wildfire) when:7d'
+    - 'site:reuters.com (cyclone OR typhoon OR monsoon OR landslide) when:7d'
+    - 'site:reuters.com (blizzard OR snowstorm OR avalanche OR cold snap) when:7d'
+    - 'site:reuters.com (meteorological OR rainfall OR temperature OR forecast) when:7d'
 - name: nws-alerts-us
   adapter: multi_rss
   enabled: true
