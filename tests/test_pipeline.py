@@ -10,6 +10,7 @@ from ai_weather_signals.enums import AssertionType, EvidenceType, Phenomenon
 from ai_weather_signals.models import (
     ClassificationDecision,
     IngestRun,
+    ModelVersion,
     RawMessage,
     Source,
     WeatherEvent,
@@ -46,6 +47,7 @@ class OfficialClassifier:
         text: str,
         source_region: str | None,
         published_at: str,
+        source_kind: str = "social",
         timeout_seconds: float | None = None,
     ) -> LLMExtraction:
         return LLMExtraction(
@@ -93,6 +95,7 @@ def test_full_pipeline_is_idempotent(session) -> None:
     assert session.scalar(select(func.count()).select_from(RawMessage)) == 1
     assert session.scalar(select(func.count()).select_from(WeatherSignal)) == 1
     assert session.scalar(select(func.count()).select_from(ClassificationDecision)) == 1
+    assert session.scalar(select(ModelVersion.prompt_version)) == "offline-rules-v1"
     aggregate(session, load_weights(Path("config/confidence.yaml")))
     assert session.scalar(select(func.count()).select_from(WeatherEvent)) == 1
 

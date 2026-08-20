@@ -86,6 +86,8 @@ def test_ollama_uses_native_schema_and_disables_thinking() -> None:
     assert payload["stream"] is False
     assert payload["format"]["required"]
     assert payload["options"]["num_predict"] == 160
+    assert payload["options"]["num_ctx"] == 4096
+    assert json.loads(payload["messages"][1]["content"])["source_kind"] == "social"
     assert payload["keep_alive"] == "15m"
 
 

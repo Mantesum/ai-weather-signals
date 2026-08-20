@@ -39,6 +39,7 @@ class Classifier(Protocol):
         text: str,
         source_region: str | None,
         published_at: str,
+        source_kind: str = "social",
         timeout_seconds: float | None = None,
     ) -> LLMExtraction: ...
 
@@ -75,7 +76,7 @@ def _model_version(session: Session, settings: Settings, classifier: Classifier)
         return found
     found = ModelVersion(
         model_name=settings.llm_model,
-        prompt_version="weather-extraction-v1",
+        prompt_version=getattr(classifier, "prompt_version", "unknown"),
         schema_version=settings.schema_version,
         prompt_sha256=classifier.prompt_hash,
     )
@@ -166,6 +167,13 @@ def ingest_once(
                     message.text,
                     source.region,
                     message.published_at.isoformat(),
+                    source_kind=(
+                        "official"
+                        if "official" in source.tags
+                        else "news"
+                        if "news" in source.tags
+                        else "social"
+                    ),
                     timeout_seconds=remaining,
                 )
                 run.classified_count += 1

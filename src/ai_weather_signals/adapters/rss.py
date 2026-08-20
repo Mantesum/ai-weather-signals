@@ -4,19 +4,18 @@ from email.utils import parsedate_to_datetime
 import feedparser
 
 from ..schemas import NormalizedMessage
-from .base import Adapter, AdapterResult
+from .base import PUBLIC_FEED_HEADERS, Adapter, AdapterResult, strip_html
 
 
 class RSSAdapter(Adapter):
     def fetch(self, cursor: str | None = None) -> AdapterResult:
-        response = self.client.get(
-            self.source.target, headers={"Accept": "application/atom+xml, application/rss+xml"}
-        )
+        response = self.client.get(self.source.target, headers=PUBLIC_FEED_HEADERS)
         response.raise_for_status()
         feed = feedparser.parse(response.content)
         messages: list[NormalizedMessage] = []
         newest = cursor
-        for entry in feed.entries:
+        limit = max(1, min(int(str(self.source.options.get("limit", 100))), 200))
+        for entry in feed.entries[:limit]:
             external_id = str(entry.get("id") or entry.get("link") or "")
             if not external_id or external_id == cursor:
                 break
@@ -27,7 +26,9 @@ class RSSAdapter(Adapter):
                 published_at = datetime.now(UTC)
             if published_at.tzinfo is None:
                 published_at = published_at.replace(tzinfo=UTC)
-            text = "\n".join(filter(None, [entry.get("title", ""), entry.get("summary", "")]))
+            text = strip_html(
+                "\n".join(filter(None, [entry.get("title", ""), entry.get("summary", "")]))
+            )
             messages.append(
                 NormalizedMessage(
                     source_name=self.source.name,

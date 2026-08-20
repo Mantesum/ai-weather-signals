@@ -1,25 +1,8 @@
-import os
 from datetime import datetime
-from html.parser import HTMLParser
 from typing import Any
 
 from ..schemas import NormalizedMessage
-from .base import Adapter, AdapterResult
-
-
-class _TextExtractor(HTMLParser):
-    def __init__(self) -> None:
-        super().__init__()
-        self.parts: list[str] = []
-
-    def handle_data(self, data: str) -> None:
-        self.parts.append(data)
-
-
-def strip_html(value: str) -> str:
-    parser = _TextExtractor()
-    parser.feed(value)
-    return " ".join("".join(parser.parts).split())
+from .base import Adapter, AdapterResult, source_token, strip_html
 
 
 class MastodonAdapter(Adapter):
@@ -30,7 +13,7 @@ class MastodonAdapter(Adapter):
         else:
             hashtags = [str(self.source.options.get("hashtag", "weather")).lstrip("#")]
         headers: dict[str, str] = {}
-        token = os.getenv(self.source.env_token or "MASTODON_ACCESS_TOKEN", "")
+        token = source_token(self.source.env_token or "MASTODON_ACCESS_TOKEN")
         if token:
             headers["Authorization"] = f"Bearer {token}"
         total_limit = min(int(str(self.source.options.get("limit", 40))), 40)

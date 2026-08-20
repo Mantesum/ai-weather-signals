@@ -9,18 +9,25 @@ from ..config import Settings
 from ..metrics import metrics
 from ..schemas import LLMExtraction
 
-PROMPT_VERSION = "weather-extraction-v1"
+PROMPT_VERSION = "weather-extraction-v2"
 SYSTEM_PROMPT = """You classify a public message about actual weather. Return only schema-valid JSON.
-An event is a candidate only for a current personal/probable personal observation or an official current report.
-Reject forecasts, old events, news retellings, questions, negations, jokes, metaphors, ads, spam and copies.
+An event is a candidate for a current personal/probable observation, a current official alert/report, or a
+fresh publisher report describing a concrete weather event that has already happened or is happening now.
+For source_kind=news use assertion_type=news, never official_report. For source_kind=official use
+official_report when the item is a current alert or observation. A news item is corroboration, not proof.
+Reject forecasts, future risks, old events, generic climate discussion, questions, negations, jokes,
+metaphors, ads, spam and copies.
 Copy an explicitly stated city or locality into place_name. Otherwise infer a place only when strongly implied
 by source_region; use null when neither is available. Use ISO-8601 with timezone for observed_at.
 The intensity, time_precision, and confidence fields are decimal scores from 0.0 to 1.0 only—never
-percentages, durations, counts, or a 1-to-10 scale. rationale_code must be a short snake_case code,
+percentages, durations, counts, or a 1-to-10 scale. time_precision measures certainty about observed_at:
+1.0 means an exact time and 0.0 means a very uncertain time. rationale_code must be a short snake_case code,
 not a sentence. Do not include personal data. /no_think"""
 
 
 class LLMClassifier:
+    prompt_version = PROMPT_VERSION
+
     def __init__(self, settings: Settings, client: httpx.Client | None = None) -> None:
         self.settings = settings
         self.client = client or httpx.Client(timeout=90)
@@ -34,6 +41,7 @@ class LLMClassifier:
         text: str,
         source_region: str | None,
         published_at: str,
+        source_kind: str = "social",
         timeout_seconds: float | None = None,
     ) -> LLMExtraction:
         schema = LLMExtraction.model_json_schema()
@@ -45,6 +53,7 @@ class LLMClassifier:
                     {
                         "text": text[: self.settings.llm_max_input_chars],
                         "source_region": source_region,
+                        "source_kind": source_kind,
                         "published_at": published_at,
                     },
                     ensure_ascii=False,
@@ -60,7 +69,12 @@ class LLMClassifier:
                 "think": False,
                 "keep_alive": "15m",
                 "format": schema,
-                "options": {"temperature": 0.1, "seed": 42, "num_predict": 160},
+                "options": {
+                    "temperature": 0.1,
+                    "seed": 42,
+                    "num_predict": 160,
+                    "num_ctx": self.settings.llm_context_length,
+                },
             }
         else:
             url = f"{self.settings.llm_base_url.rstrip('/')}/chat/completions"

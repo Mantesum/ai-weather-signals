@@ -1,22 +1,24 @@
 # Local LLM
 
-Recommended Windows runtime is Ollama bound to `127.0.0.1`. This deployment uses `qwen3.5:9b`, which fits the audited V100 16 GB and provides stronger multilingual extraction than the smaller 4B fallback. The native Ollama API receives the full JSON schema and `think: false`, avoiding hidden reasoning latency. Configure it with:
+Recommended Windows runtime is Ollama bound to `127.0.0.1`. The high-volume source deployment uses `qwen3.5:4b` with a 4,096-token context; `qwen3.5:9b` remains the higher-quality option after a stable GPU runtime is validated. The native Ollama API receives the full JSON schema and `think: false`, avoiding hidden reasoning latency. Configure it with:
 
 ```dotenv
 LLM_PROVIDER=ollama
 LLM_BASE_URL=http://127.0.0.1:11434
-LLM_MODEL=qwen3.5:9b
+LLM_MODEL=qwen3.5:4b
 LLM_TIMEOUT_SECONDS=45
 LLM_MAX_INPUT_CHARS=2000
+LLM_CONTEXT_LENGTH=4096
 ```
 
-Ollama requests keep the model loaded for 15 minutes, cap input at 2,000 characters and generation at
-160 tokens. A timed-out request is not repeated; invalid structured output may be retried once.
+Ollama requests keep the model loaded for 15 minutes, cap input at 2,000 characters, context at 4,096 tokens,
+and generation at 160 tokens. A timed-out request is not repeated; invalid structured output may be retried once.
 
-On the audited Tesla V100 Windows host, Ollama's default CUDA 13 runner omits compute capability 7.0.
-Forcing its bundled CUDA 12 runner loaded the model into VRAM but caused a driver-level GPU loss, so the
-deployment remains in automatic CPU mode until Windows is rebooted and a stable sm_70-capable runtime is
-validated. Do not force `OLLAMA_LLM_LIBRARY` on that host without a recovery window.
+On the audited Tesla V100 Windows host, the stable deployment profile uses the CUDA 12 runner selected
+automatically by Ollama, NVIDIA driver 582.78, `qwen3.5:4b`, one loaded model, one parallel request and a
+4,096-token context. The profile completed sustained real-source collection after earlier driver-level failures
+with a different Ollama/runtime combination. Do not force `OLLAMA_LLM_LIBRARY`; after any `GPU is lost` error,
+stop the Worker and Ollama and reboot Windows before further inference.
 
 `llama.cpp` remains supported through the OpenAI-compatible provider:
 

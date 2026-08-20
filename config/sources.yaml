@@ -1,49 +1,635 @@
 version: 1
 sources:
-  - name: bluesky-jetstream
-    adapter: jetstream
-    enabled: false
-    target: wss://jetstream2.us-east.bsky.network/subscribe
-    language: und
-    poll_interval_seconds: 300
-    trust: 0.45
-    tags: [social, global]
-    store_text: true
-    options:
-      collections: [app.bsky.feed.post]
-      max_messages: 100
-      read_timeout_seconds: 10
-  - name: mastodon-weather
-    adapter: mastodon
-    enabled: false
-    target: https://mastodon.social
-    language: en
-    poll_interval_seconds: 600
-    trust: 0.45
-    tags: [social, global]
-    store_text: true
-    env_token: MASTODON_ACCESS_TOKEN
-    options:
-      hashtags: [weather, rain, snow, storm, meteo, погода, дождь, снег]
-      limit: 40
-  - name: example-official-rss
-    adapter: rss
-    enabled: false
-    target: https://example.invalid/weather.atom
-    region: Moscow
-    language: ru
-    poll_interval_seconds: 900
-    trust: 0.85
-    tags: [official, replace-me]
-    store_text: true
-  - name: example-telegram-channel
-    adapter: telegram
-    enabled: false
-    target: public_channel_username
-    region: Moscow
-    language: ru
-    poll_interval_seconds: 600
-    trust: 0.55
-    tags: [social, optional, replace-me]
-    store_text: true
-    env_token: TELEGRAM_API_HASH
+- name: bluesky-jetstream
+  adapter: jetstream
+  enabled: true
+  target: wss://jetstream2.us-east.bsky.network/subscribe
+  language: und
+  poll_interval_seconds: 300
+  trust: 0.45
+  tags:
+  - social
+  - global
+  store_text: true
+  options:
+    collections:
+    - app.bsky.feed.post
+    max_messages: 100
+    read_timeout_seconds: 10
+- name: mastodon-weather
+  adapter: mastodon
+  enabled: true
+  target: https://mastodon.social
+  language: en
+  poll_interval_seconds: 600
+  trust: 0.45
+  tags:
+  - social
+  - global
+  store_text: true
+  env_token: MASTODON_ACCESS_TOKEN
+  options:
+    hashtags:
+    - weather
+    - rain
+    - snow
+    - storm
+    - meteo
+    - погода
+    - дождь
+    - снег
+    limit: 40
+- name: x-weather
+  adapter: x_recent
+  enabled: false
+  target: https://api.x.com/2/tweets/search/recent
+  language: und
+  poll_interval_seconds: 900
+  trust: 0.45
+  tags:
+  - social
+  - global
+  - paid-api
+  store_text: true
+  env_token: X_BEARER_TOKEN
+  options:
+    query: '(weather OR rain OR snow OR storm OR meteo OR погода OR дождь OR снег OR lluvia OR nieve OR tormenta OR météo OR pluie OR neige OR tempête OR Wetter OR Regen OR Schnee OR Sturm) -is:retweet'
+    max_results: 10
+- name: google-news-global-en
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.62
+  tags: [news, search, global]
+  store_text: true
+  options:
+    hl: en-US
+    gl: US
+    ceid: US:en
+    total_limit: 18
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(flash flood OR flooding OR inundation) when:1d'
+    - '(hailstorm OR hail OR tornado OR waterspout) when:1d'
+    - '("heavy snow" OR blizzard OR "ice storm" OR avalanche) when:1d'
+    - '(heatwave OR "record heat" OR "extreme heat" OR drought) when:1d'
+    - '(typhoon OR hurricane OR "tropical cyclone") when:1d'
+    - '("severe thunderstorm" OR "dust storm" OR "freezing rain") when:1d'
+- name: google-news-global-multilingual
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.62
+  tags: [news, search, global, multilingual]
+  store_text: true
+  options:
+    hl: en-US
+    gl: US
+    ceid: US:en
+    total_limit: 18
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(ливень OR наводнение OR град OR снегопад OR метель OR ураган) when:1d'
+    - '(inundación OR granizo OR tormenta OR huracán OR nevada) when:1d'
+    - '(inondation OR grêle OR tempête OR canicule OR neige) when:1d'
+    - '(Überschwemmung OR Hagel OR Sturm OR Schneefall OR Hitzewelle) when:1d'
+    - '(enchente OR granizo OR tempestade OR ciclone OR nevasca) when:1d'
+    - '(فيضانات OR عاصفة OR برد OR أمطار غزيرة OR إعصار) when:1d'
+- name: google-news-sea-regional
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, southeast-asia]
+  store_text: true
+  options:
+    hl: en-SG
+    gl: SG
+    ceid: SG:en
+    total_limit: 20
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(flood OR "flash flood" OR landslide) ("Southeast Asia" OR ASEAN) when:1d'
+    - '(typhoon OR cyclone OR storm) (Philippines OR Vietnam OR Indonesia) when:1d'
+    - '("heavy rain" OR monsoon OR thunderstorm) (Thailand OR Malaysia OR Singapore) when:1d'
+    - '(flood OR storm OR landslide) (Myanmar OR Cambodia OR Laos) when:1d'
+    - '(flood OR "heavy rain" OR storm) (Brunei OR "Timor-Leste") when:1d'
+    - '(weather warning OR evacuation) (Jakarta OR Manila OR Bangkok OR Hanoi) when:1d'
+    - '(extreme weather OR flood) ("Kuala Lumpur" OR Singapore OR "Ho Chi Minh City") when:1d'
+    - '(storm surge OR coastal flooding OR high waves) (Indonesia OR Philippines OR Vietnam) when:1d'
+- name: google-news-indonesia
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: id
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, southeast-asia, indonesia]
+  store_text: true
+  options:
+    hl: id
+    gl: ID
+    ceid: ID:id
+    total_limit: 16
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(banjir OR banjir bandang) Indonesia when:1d'
+    - '(hujan lebat OR cuaca ekstrem) Indonesia when:1d'
+    - '(badai OR puting beliung OR gelombang tinggi) Indonesia when:1d'
+    - '(longsor OR kekeringan OR hujan es) Indonesia when:1d'
+- name: google-news-philippines
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, southeast-asia, philippines]
+  store_text: true
+  options:
+    hl: en-PH
+    gl: PH
+    ceid: PH:en
+    total_limit: 16
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(bagyo OR typhoon OR tropical cyclone) Philippines when:1d'
+    - '(baha OR flood OR flash flood) Philippines when:1d'
+    - '(malakas na ulan OR heavy rain OR thunderstorm) Philippines when:1d'
+    - '(landslide OR storm surge OR heat index) Philippines when:1d'
+- name: google-news-vietnam
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: vi
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, southeast-asia, vietnam]
+  store_text: true
+  options:
+    hl: vi
+    gl: VN
+    ceid: VN:vi
+    total_limit: 16
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(lũ lụt OR lũ quét OR ngập lụt) Việt Nam when:1d'
+    - '(mưa lớn OR mưa đá OR dông lốc) Việt Nam when:1d'
+    - '(bão OR áp thấp nhiệt đới) Việt Nam when:1d'
+    - '(sạt lở OR nắng nóng OR hạn hán) Việt Nam when:1d'
+- name: google-news-thailand
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: th
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, southeast-asia, thailand]
+  store_text: true
+  options:
+    hl: th
+    gl: TH
+    ceid: TH:th
+    total_limit: 16
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(น้ำท่วม OR น้ำป่าไหลหลาก) ประเทศไทย when:1d'
+    - '(ฝนตกหนัก OR พายุฝนฟ้าคะนอง) ประเทศไทย when:1d'
+    - '(พายุ OR ลูกเห็บ OR ลมแรง) ประเทศไทย when:1d'
+    - '(ดินถล่ม OR ภัยแล้ง OR อากาศร้อนจัด) ประเทศไทย when:1d'
+- name: google-news-malaysia-singapore
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, southeast-asia, malaysia, singapore]
+  store_text: true
+  options:
+    hl: en-SG
+    gl: SG
+    ceid: SG:en
+    total_limit: 16
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(banjir OR "flash flood") (Malaysia OR Singapore) when:1d'
+    - '(hujan lebat OR "heavy rain") (Malaysia OR Singapore) when:1d'
+    - '(ribut petir OR thunderstorm OR strong winds) (Malaysia OR Singapore) when:1d'
+    - '(tanah runtuh OR landslide OR heatwave) (Malaysia OR Singapore) when:1d'
+- name: google-news-myanmar
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.62
+  tags: [news, search, southeast-asia, myanmar]
+  store_text: true
+  options:
+    hl: en-SG
+    gl: SG
+    ceid: SG:en
+    total_limit: 12
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(flood OR "heavy rain" OR cyclone) Myanmar when:1d'
+    - '(ရေကြီး OR မိုးသည်းထန် OR မုန်တိုင်း) Myanmar when:1d'
+    - '(landslide OR extreme heat OR drought) Myanmar when:1d'
+- name: google-news-mekong
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.62
+  tags: [news, search, southeast-asia, cambodia, laos]
+  store_text: true
+  options:
+    hl: en-SG
+    gl: SG
+    ceid: SG:en
+    total_limit: 12
+    per_query_limit: 8
+    delay_seconds: 0.25
+    queries:
+    - '(flood OR "heavy rain" OR storm) (Cambodia OR Laos) when:1d'
+    - '(ទឹកជំនន់ OR ភ្លៀងខ្លាំង OR ព្យុះ) Cambodia when:1d'
+    - '(ນ້ຳຖ້ວມ OR ຝົນຕົກໜັກ OR ພາຍຸ) Laos when:1d'
+- name: google-news-africa
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: Africa
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.63
+  tags: [news, search, africa, multilingual]
+  store_text: true
+  options:
+    hl: en-ZA
+    gl: ZA
+    ceid: ZA:en
+    total_limit: 16
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(flood OR "flash flood" OR "heavy rain" OR landslide) (Africa OR Kenya OR Nigeria OR Ethiopia) when:1d'
+    - '(cyclone OR storm OR "storm surge") (Mozambique OR Madagascar OR Tanzania OR "South Africa") when:1d'
+    - '(heatwave OR drought OR "dust storm") (Sahel OR Africa OR Sudan OR Somalia) when:1d'
+    - '(inondation OR pluies torrentielles OR tempête OR canicule) (Afrique OR Sénégal OR Cameroun OR Congo) when:1d'
+    - '(cheias OR chuva forte OR ciclone OR seca) (Angola OR Moçambique OR "Cabo Verde") when:1d'
+    - '(mafuriko OR mvua kubwa OR dhoruba OR ukame) (Kenya OR Tanzania OR Uganda) when:1d'
+- name: google-news-north-america
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: North America
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, north-america, multilingual]
+  store_text: true
+  options:
+    hl: en-US
+    gl: US
+    ceid: US:en
+    total_limit: 18
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(tornado OR "severe thunderstorm" OR hailstorm) (US OR "United States" OR Canada) when:1d'
+    - '(hurricane OR "tropical storm" OR "storm surge") (US OR Mexico OR Caribbean) when:1d'
+    - '("flash flood" OR flooding OR landslide) (US OR Canada OR Mexico) when:1d'
+    - '(blizzard OR "heavy snow" OR "ice storm" OR "freezing rain") (US OR Canada) when:1d'
+    - '(heatwave OR "extreme heat" OR drought OR "wildfire smoke") (US OR Canada OR Mexico) when:1d'
+    - '(inondation OR tempête OR neige OR verglas) (Québec OR Canada) when:1d'
+- name: google-news-latin-america-caribbean
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: Latin America
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.63
+  tags: [news, search, latin-america, caribbean, multilingual]
+  store_text: true
+  options:
+    hl: es
+    gl: MX
+    ceid: MX:es
+    total_limit: 18
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(inundación OR lluvias torrenciales OR desbordamiento) (México OR Centroamérica OR Caribe) when:1d'
+    - '(inundación OR deslizamiento OR aluvión) (Colombia OR Ecuador OR Perú OR Bolivia) when:1d'
+    - '(tormenta OR huracán OR ciclón OR granizo) (Caribe OR México OR Centroamérica) when:1d'
+    - '(ola de calor OR sequía OR incendio humo) (Argentina OR Chile OR Paraguay OR Uruguay) when:1d'
+    - '(enchente OR chuva forte OR deslizamento OR ciclone) Brasil when:1d'
+    - '(granizo OR nevada OR ola polar OR viento fuerte) (Argentina OR Chile OR Andes) when:1d'
+- name: google-news-europe
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: Europe
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, europe, multilingual]
+  store_text: true
+  options:
+    hl: en-GB
+    gl: GB
+    ceid: GB:en
+    total_limit: 18
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(flood OR "flash flood" OR storm OR "heavy rain") Europe when:1d'
+    - '(heatwave OR "extreme heat" OR drought OR wildfire smoke) Europe when:1d'
+    - '(blizzard OR "heavy snow" OR avalanche OR "freezing rain") Europe when:1d'
+    - '(inondation OR tempête OR canicule OR neige) (France OR Belgique OR Suisse) when:1d'
+    - '(Überschwemmung OR Unwetter OR Hagel OR Schneefall) (Deutschland OR Österreich OR Schweiz) when:1d'
+    - '(powódź OR ulewa OR burza OR upał OR повінь OR злива OR буря) Europe when:1d'
+- name: google-news-middle-east-north-africa
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: Middle East
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.63
+  tags: [news, search, middle-east, north-africa, multilingual]
+  store_text: true
+  options:
+    hl: ar
+    gl: AE
+    ceid: AE:ar
+    total_limit: 16
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(فيضانات OR أمطار غزيرة OR سيول) (السعودية OR الإمارات OR عُمان OR اليمن) when:1d'
+    - '(عاصفة OR إعصار OR عاصفة ترابية OR موجة حر) (الشرق الأوسط OR العراق OR الأردن) when:1d'
+    - '(flood OR "heavy rain" OR "dust storm" OR heatwave) (Middle East OR Gulf OR Levant) when:1d'
+    - '(سیل OR باران شدید OR طوفان OR برف) (ایران OR افغانستان) when:1d'
+    - '(sel OR şiddetli yağmur OR fırtına OR dolu OR sıcak hava) Türkiye when:1d'
+- name: google-news-south-asia
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: South Asia
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, south-asia, multilingual]
+  store_text: true
+  options:
+    hl: en-IN
+    gl: IN
+    ceid: IN:en
+    total_limit: 18
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(flood OR monsoon OR "heavy rain" OR landslide) (India OR Pakistan OR Bangladesh OR Nepal) when:1d'
+    - '(cyclone OR "storm surge" OR thunderstorm OR hailstorm) (India OR Bangladesh OR Sri Lanka) when:1d'
+    - '(heatwave OR "extreme heat" OR drought OR "cold wave") (India OR Pakistan OR Bangladesh) when:1d'
+    - '(बाढ़ OR भारी बारिश OR तूफान OR चक्रवात OR लू) भारत when:1d'
+    - '(বন্যা OR ভারী বৃষ্টি OR ঝড় OR ঘূর্ণিঝড়) (বাংলাদেশ OR ভারত) when:1d'
+    - '(سیلاب OR شدید بارش OR طوفان OR ژالہ باری) پاکستان when:1d'
+- name: google-news-east-asia
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: East Asia
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, east-asia, multilingual]
+  store_text: true
+  options:
+    hl: ja
+    gl: JP
+    ceid: JP:ja
+    total_limit: 18
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(台風 OR 大雨 OR 洪水 OR 土砂災害 OR 猛暑) (日本 OR 沖縄) when:1d'
+    - '(洪水 OR 暴雨 OR 台风 OR 暴雪 OR 高温) (中国 OR 香港 OR 台湾) when:1d'
+    - '(홍수 OR 폭우 OR 태풍 OR 폭설 OR 폭염) (한국 OR 대한민국) when:1d'
+    - '(typhoon OR "heavy rain" OR flood OR heatwave) (Japan OR China OR Korea OR Taiwan) when:1d'
+    - '(blizzard OR "heavy snow" OR avalanche OR "dust storm") (Japan OR China OR Mongolia) when:1d'
+    - '(storm surge OR coastal flooding OR high waves) (Japan OR China OR Korea OR Taiwan) when:1d'
+- name: google-news-central-asia-caucasus
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: Central Asia
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.62
+  tags: [news, search, central-asia, caucasus, multilingual]
+  store_text: true
+  options:
+    hl: ru
+    gl: KZ
+    ceid: KZ:ru
+    total_limit: 15
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(наводнение OR паводок OR ливень OR сель) (Казахстан OR Кыргызстан OR Таджикистан) when:1d'
+    - '(метель OR буран OR мороз OR жара OR засуха) (Казахстан OR Узбекистан OR Туркменистан) when:1d'
+    - '(су тасқыны OR нөсер OR дауыл OR боран) Қазақстан when:1d'
+    - "(suv toshqini OR kuchli yomg'ir OR bo'ron OR qurg'oqchilik) O'zbekiston when:1d"
+    - '(flood OR landslide OR storm OR heavy snow) (Georgia OR Armenia OR Azerbaijan OR Caucasus) when:1d'
+- name: google-news-oceania-pacific
+  adapter: google_news
+  enabled: true
+  target: https://news.google.com/rss/search
+  region: Oceania
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, search, oceania, pacific]
+  store_text: true
+  options:
+    hl: en-AU
+    gl: AU
+    ceid: AU:en
+    total_limit: 16
+    per_query_limit: 6
+    delay_seconds: 0.25
+    queries:
+    - '(flood OR "flash flood" OR "heavy rain") (Australia OR "New Zealand") when:1d'
+    - '(cyclone OR "tropical storm" OR "storm surge") (Australia OR Fiji OR Vanuatu OR Tonga) when:1d'
+    - '(heatwave OR "extreme heat" OR bushfire smoke OR drought) Australia when:1d'
+    - '("severe thunderstorm" OR hail OR damaging winds) Australia when:1d'
+    - '(landslide OR flood OR cyclone OR high waves) ("Papua New Guinea" OR Pacific Islands) when:1d'
+- name: gdelt-weather-global
+  adapter: gdelt
+  enabled: false
+  target: https://api.gdeltproject.org/api/v2/doc/doc
+  language: und
+  poll_interval_seconds: 21600
+  trust: 0.6
+  tags: [news, search, global, rate-limited]
+  store_text: true
+  options:
+    query: '(flood OR typhoon OR cyclone OR hail OR blizzard OR heatwave OR landslide)'
+    max_records: 25
+    timespan: 1d
+- name: gdacs-global
+  adapter: multi_rss
+  enabled: true
+  target: https://data.gdacs.org/
+  language: en
+  poll_interval_seconds: 600
+  trust: 0.95
+  tags: [official, disaster, global]
+  store_text: true
+  options:
+    total_limit: 40
+    per_feed_limit: 30
+    feeds:
+    - https://data.gdacs.org/xml/rss_tc_7d.xml
+    - https://data.gdacs.org/xml/rss_fl_7d.xml
+- name: nasa-eonet-weather
+  adapter: eonet
+  enabled: true
+  target: https://eonet.gsfc.nasa.gov/api/v3/events
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.9
+  tags: [official, satellite, global]
+  store_text: true
+  options:
+    categories: severeStorms,floods,drought,dustHaze,seaLakeIce,snow
+    status: open
+    limit: 50
+    days: 30
+- name: meteoalarm-europe
+  adapter: multi_rss
+  enabled: true
+  target: https://feeds.meteoalarm.org/
+  language: und
+  poll_interval_seconds: 3600
+  trust: 0.95
+  tags: [official, warnings, europe]
+  store_text: true
+  options:
+    total_limit: 50
+    per_feed_limit: 10
+    feeds:
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-united-kingdom
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-france
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-germany
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-italy
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-spain
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-portugal
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-netherlands
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-belgium
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-poland
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-greece
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-ukraine
+    - https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-norway
+- name: bbc-weather-rss
+  adapter: rss
+  enabled: true
+  target: http://feeds.bbci.co.uk/news/science_and_environment/rss.xml
+  language: en
+  poll_interval_seconds: 1800
+  trust: 0.75
+  tags: [news, official, global]
+  store_text: true
+  options:
+    limit: 15
+- name: reuters-climate-disaster
+  adapter: rss
+  enabled: false
+  target: http://feeds.reuters.com/reuters/environment
+  language: en
+  poll_interval_seconds: 1800
+  trust: 0.72
+  tags: [news, global, climate, retired-feed]
+  store_text: true
+  options:
+    limit: 15
+- name: nws-alerts-us
+  adapter: multi_rss
+  enabled: true
+  target: https://api.weather.gov/alerts/active.atom
+  language: en
+  poll_interval_seconds: 600
+  trust: 0.95
+  tags: [official, disaster, us]
+  store_text: true
+  options:
+    total_limit: 40
+    per_feed_limit: 40
+    feeds:
+    - https://api.weather.gov/alerts/active.atom
+- name: example-official-rss
+  adapter: rss
+  enabled: false
+  target: https://example.invalid/weather.atom
+  region: Moscow
+  language: ru
+  poll_interval_seconds: 900
+  trust: 0.85
+  tags:
+  - official
+  - replace-me
+  store_text: true
+  options: {}
+- name: example-telegram-channel
+  adapter: telegram
+  enabled: false
+  target: public_channel_username
+  region: Moscow
+  language: ru
+  poll_interval_seconds: 600
+  trust: 0.55
+  tags:
+  - social
+  - optional
+  - replace-me
+  store_text: true
+  env_token: TELEGRAM_API_HASH
+  options: {}
+- name: reddit-weather
+  adapter: reddit
+  enabled: false
+  target: https://oauth.reddit.com
+  language: en
+  poll_interval_seconds: 300
+  trust: 0.50
+  tags:
+  - social
+  - global
+  - alternative
+  - replace-me
+  store_text: true
+  env_token: REDDIT_OAUTH_TOKEN
+  options:
+    queries: "weather,storm,hail,flood,snow"
+    limit: 25
+    sort: new

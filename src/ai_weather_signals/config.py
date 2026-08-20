@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     llm_enabled: bool = True
     llm_timeout_seconds: float = Field(default=45, gt=0, le=300)
     llm_max_input_chars: int = Field(default=2000, ge=200, le=10000)
+    llm_context_length: int = Field(default=4096, ge=512, le=32768)
     author_hash_salt: str = Field(default="development-only-change-me", min_length=8)
     log_level: str = "INFO"
     raw_text_retention_days: int = Field(default=30, ge=0)

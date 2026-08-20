@@ -37,3 +37,12 @@ def test_schema_rejects_forecast_candidate_and_extra_fields() -> None:
     payload["personal_name"] = "must not be accepted"
     with pytest.raises(ValidationError):
         LLMExtraction.model_validate(payload)
+
+
+def test_duration_like_time_precision_is_normalized() -> None:
+    payload = valid_payload()
+    payload["time_precision"] = 1209600
+    assert LLMExtraction.model_validate(payload).time_precision == 0.25
+
+    payload["time_precision"] = 120
+    assert LLMExtraction.model_validate(payload).time_precision == 0.85

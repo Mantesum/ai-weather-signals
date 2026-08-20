@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.4.0 - 2026-08-20
+
+- Expand bounded Google News RSS discovery from 46 to 97 queries across Southeast Asia, Africa,
+  North America, Latin America and the Caribbean, Europe, the Middle East, South Asia, East Asia,
+  Central Asia and the Caucasus, and Oceania/Pacific.
+- Balance all regional Google News groups on a one-hour interval and remove the former Southeast Asia
+  priority/frequency bias.
+- Expand fallback geocoding from 88 to 187 worldwide city anchors and add weather vocabulary for
+  African, South Asian, East Asian, Middle Eastern, Central Asian and Eastern European languages.
+- Add GDELT DOC, NASA EONET and merged RSS/Atom adapters; enable GDACS cyclone/flood, EONET and selected Meteoalarm feeds.
+- Add Southeast Asian city anchors and weather terms in Indonesian/Malay, Vietnamese, Thai, Filipino, Burmese, Khmer and Lao.
+- Add optional Reddit, X Recent Search and additional RSS sources while keeping credentialed or rate-limited sources disabled by default.
+- Strip feed HTML, use explicit public-feed headers and cap large RSS batches.
+- Make Ollama context length configurable and select the 4B/4,096-token high-volume profile.
+- Clarify and normalize `time_precision` output from small local models; bump the extraction prompt to v2.
+- Harden Windows Task Scheduler startup for Ollama, PostgreSQL readiness and process cleanup.
+- Replace obsolete state-by-state NWS feeds with the official nationwide active-alert Atom feed and
+  disable the retired Reuters environment RSS endpoint.
+- Keep GDELT and X disabled until their external access requirements are satisfied.
+
 ## 0.3.0 - 2026-08-16
 
 - Persist accepted and rejected structured LLM decisions for audit.

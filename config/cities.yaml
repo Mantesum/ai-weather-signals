@@ -70,6 +70,19 @@ cities:
   - {id: apache-junction, name: Apache Junction, country: US, latitude: 33.41505, longitude: -111.54958, aliases: [Апачи-Джанкшен]}
   - {id: jakarta, name: Jakarta, country: ID, latitude: -6.2088, longitude: 106.8456, aliases: [Джакарта]}
   - {id: manila, name: Manila, country: PH, latitude: 14.5995, longitude: 120.9842, aliases: [Манила]}
+  - {id: ho-chi-minh-city, name: Ho Chi Minh City, country: VN, latitude: 10.8231, longitude: 106.6297, aliases: [Хошимин, Saigon, Sài Gòn, Thành phố Hồ Chí Minh]}
+  - {id: hanoi, name: Hanoi, country: VN, latitude: 21.0278, longitude: 105.8342, aliases: [Ханой, Hà Nội]}
+  - {id: kuala-lumpur, name: Kuala Lumpur, country: MY, latitude: 3.1390, longitude: 101.6869, aliases: [Куала-Лумпур]}
+  - {id: phnom-penh, name: Phnom Penh, country: KH, latitude: 11.5564, longitude: 104.9282, aliases: [Пномпень, ភ្នំពេញ]}
+  - {id: yangon, name: Yangon, country: MM, latitude: 16.8409, longitude: 96.1735, aliases: [Янгон, Rangoon, ရန်ကုန်]}
+  - {id: vientiane, name: Vientiane, country: LA, latitude: 17.9757, longitude: 102.6331, aliases: [Вьентьян, ວຽງຈັນ]}
+  - {id: bandar-seri-begawan, name: Bandar Seri Begawan, country: BN, latitude: 4.9031, longitude: 114.9398, aliases: [Бандар-Сери-Бегаван]}
+  - {id: dili, name: Dili, country: TL, latitude: -8.5569, longitude: 125.5603, aliases: [Дили]}
+  - {id: cebu-city, name: Cebu City, country: PH, latitude: 10.3157, longitude: 123.8854, aliases: [Себу, Cebu]}
+  - {id: surabaya, name: Surabaya, country: ID, latitude: -7.2575, longitude: 112.7521, aliases: [Сурабая]}
+  - {id: medan, name: Medan, country: ID, latitude: 3.5952, longitude: 98.6722, aliases: [Медан]}
+  - {id: da-nang, name: Da Nang, country: VN, latitude: 16.0544, longitude: 108.2022, aliases: [Дананг, Đà Nẵng]}
+  - {id: chiang-mai, name: Chiang Mai, country: TH, latitude: 18.7883, longitude: 98.9853, aliases: [Чиангмай, เชียงใหม่]}
   - {id: sydney, name: Sydney, country: AU, latitude: -33.8688, longitude: 151.2093, aliases: [Сидней]}
   - {id: melbourne, name: Melbourne, country: AU, latitude: -37.8136, longitude: 144.9631, aliases: [Мельбурн]}
   - {id: cape-town, name: Cape Town, country: ZA, latitude: -33.9249, longitude: 18.4241, aliases: [Кейптаун]}
@@ -78,3 +91,103 @@ cities:
   - {id: lagos, name: Lagos, country: NG, latitude: 6.5244, longitude: 3.3792, aliases: [Лагос]}
   - {id: anchorage, name: Anchorage, country: US, latitude: 61.2181, longitude: -149.9003, aliases: [Анкоридж]}
   - {id: honolulu, name: Honolulu, country: US, latitude: 21.3099, longitude: -157.8581, aliases: [Гонолулу]}
+  # Global coverage anchors added for balanced regional discovery and fallback geocoding.
+  - {id: johannesburg, name: Johannesburg, country: ZA, latitude: -26.2041, longitude: 28.0473, aliases: [Йоханнесбург]}
+  - {id: durban, name: Durban, country: ZA, latitude: -29.8587, longitude: 31.0218, aliases: [Дурбан]}
+  - {id: maputo, name: Maputo, country: MZ, latitude: -25.9692, longitude: 32.5732, aliases: [Мапуту]}
+  - {id: antananarivo, name: Antananarivo, country: MG, latitude: -18.8792, longitude: 47.5079, aliases: [Антананариву]}
+  - {id: addis-ababa, name: Addis Ababa, country: ET, latitude: 9.0300, longitude: 38.7400, aliases: [Аддис-Абеба]}
+  - {id: kampala, name: Kampala, country: UG, latitude: 0.3476, longitude: 32.5825, aliases: [Кампала]}
+  - {id: dar-es-salaam, name: Dar es Salaam, country: TZ, latitude: -6.7924, longitude: 39.2083, aliases: [Дар-эс-Салам]}
+  - {id: accra, name: Accra, country: GH, latitude: 5.6037, longitude: -0.1870, aliases: [Аккра]}
+  - {id: dakar, name: Dakar, country: SN, latitude: 14.7167, longitude: -17.4677, aliases: [Дакар]}
+  - {id: abidjan, name: Abidjan, country: CI, latitude: 5.3600, longitude: -4.0083, aliases: [Абиджан]}
+  - {id: kinshasa, name: Kinshasa, country: CD, latitude: -4.4419, longitude: 15.2663, aliases: [Киншаса]}
+  - {id: luanda, name: Luanda, country: AO, latitude: -8.8390, longitude: 13.2894, aliases: [Луанда]}
+  - {id: harare, name: Harare, country: ZW, latitude: -17.8252, longitude: 31.0335, aliases: [Хараре]}
+  - {id: casablanca, name: Casablanca, country: MA, latitude: 33.5731, longitude: -7.5898, aliases: [Касабланка, الدار البيضاء]}
+  - {id: algiers, name: Algiers, country: DZ, latitude: 36.7538, longitude: 3.0588, aliases: [Алжир, الجزائر]}
+  - {id: tunis, name: Tunis, country: TN, latitude: 36.8065, longitude: 10.1815, aliases: [Тунис, تونس]}
+  - {id: montreal, name: Montreal, country: CA, latitude: 45.5019, longitude: -73.5674, aliases: [Монреаль, Montréal]}
+  - {id: ottawa, name: Ottawa, country: CA, latitude: 45.4215, longitude: -75.6972, aliases: [Оттава]}
+  - {id: calgary, name: Calgary, country: CA, latitude: 51.0447, longitude: -114.0719, aliases: [Калгари]}
+  - {id: houston, name: Houston, country: US, latitude: 29.7604, longitude: -95.3698, aliases: [Хьюстон]}
+  - {id: new-orleans, name: New Orleans, country: US, latitude: 29.9511, longitude: -90.0715, aliases: [Новый Орлеан]}
+  - {id: atlanta, name: Atlanta, country: US, latitude: 33.7490, longitude: -84.3880, aliases: [Атланта]}
+  - {id: boston, name: Boston, country: US, latitude: 42.3601, longitude: -71.0589, aliases: [Бостон]}
+  - {id: washington-dc, name: Washington DC, country: US, latitude: 38.9072, longitude: -77.0369, aliases: [Вашингтон, Washington D.C.]}
+  - {id: san-juan, name: San Juan, country: PR, latitude: 18.4655, longitude: -66.1057, aliases: [Сан-Хуан]}
+  - {id: monterrey, name: Monterrey, country: MX, latitude: 25.6866, longitude: -100.3161, aliases: [Монтеррей]}
+  - {id: bogota, name: Bogota, country: CO, latitude: 4.7110, longitude: -74.0721, aliases: [Богота, Bogotá]}
+  - {id: lima, name: Lima, country: PE, latitude: -12.0464, longitude: -77.0428, aliases: [Лима]}
+  - {id: santiago, name: Santiago, country: CL, latitude: -33.4489, longitude: -70.6693, aliases: [Сантьяго]}
+  - {id: rio-de-janeiro, name: Rio de Janeiro, country: BR, latitude: -22.9068, longitude: -43.1729, aliases: [Рио-де-Жанейро, Rio]}
+  - {id: brasilia, name: Brasilia, country: BR, latitude: -15.7939, longitude: -47.8828, aliases: [Бразилиа, Brasília]}
+  - {id: recife, name: Recife, country: BR, latitude: -8.0476, longitude: -34.8770, aliases: [Ресифи]}
+  - {id: montevideo, name: Montevideo, country: UY, latitude: -34.9011, longitude: -56.1645, aliases: [Монтевидео]}
+  - {id: asuncion, name: Asuncion, country: PY, latitude: -25.2637, longitude: -57.5759, aliases: [Асунсьон, Asunción]}
+  - {id: la-paz, name: La Paz, country: BO, latitude: -16.4897, longitude: -68.1193, aliases: [Ла-Пас]}
+  - {id: quito, name: Quito, country: EC, latitude: -0.1807, longitude: -78.4678, aliases: [Кито]}
+  - {id: caracas, name: Caracas, country: VE, latitude: 10.4806, longitude: -66.9036, aliases: [Каракас]}
+  - {id: guatemala-city, name: Guatemala City, country: GT, latitude: 14.6349, longitude: -90.5069, aliases: [Гватемала]}
+  - {id: havana, name: Havana, country: CU, latitude: 23.1136, longitude: -82.3666, aliases: [Гавана, La Habana]}
+  - {id: santo-domingo, name: Santo Domingo, country: DO, latitude: 18.4861, longitude: -69.9312, aliases: [Санто-Доминго]}
+  - {id: panama-city, name: Panama City, country: PA, latitude: 8.9824, longitude: -79.5199, aliases: [Панама]}
+  - {id: san-jose-cr, name: San Jose, country: CR, latitude: 9.9281, longitude: -84.0907, aliases: [Сан-Хосе, San José]}
+  - {id: lisbon, name: Lisbon, country: PT, latitude: 38.7223, longitude: -9.1393, aliases: [Лиссабон, Lisboa]}
+  - {id: barcelona, name: Barcelona, country: ES, latitude: 41.3874, longitude: 2.1686, aliases: [Барселона]}
+  - {id: milan, name: Milan, country: IT, latitude: 45.4642, longitude: 9.1900, aliases: [Милан, Milano]}
+  - {id: vienna, name: Vienna, country: AT, latitude: 48.2082, longitude: 16.3738, aliases: [Вена, Wien]}
+  - {id: prague, name: Prague, country: CZ, latitude: 50.0755, longitude: 14.4378, aliases: [Прага, Praha]}
+  - {id: warsaw, name: Warsaw, country: PL, latitude: 52.2297, longitude: 21.0122, aliases: [Варшава, Warszawa]}
+  - {id: kyiv, name: Kyiv, country: UA, latitude: 50.4501, longitude: 30.5234, aliases: [Киев, Київ]}
+  - {id: bucharest, name: Bucharest, country: RO, latitude: 44.4268, longitude: 26.1025, aliases: [Бухарест, București]}
+  - {id: belgrade, name: Belgrade, country: RS, latitude: 44.7866, longitude: 20.4489, aliases: [Белград, Beograd]}
+  - {id: stockholm, name: Stockholm, country: SE, latitude: 59.3293, longitude: 18.0686, aliases: [Стокгольм]}
+  - {id: helsinki, name: Helsinki, country: FI, latitude: 60.1699, longitude: 24.9384, aliases: [Хельсинки]}
+  - {id: dublin, name: Dublin, country: IE, latitude: 53.3498, longitude: -6.2603, aliases: [Дублин, Baile Átha Cliath]}
+  - {id: riyadh, name: Riyadh, country: SA, latitude: 24.7136, longitude: 46.6753, aliases: [Эр-Рияд, الرياض]}
+  - {id: jeddah, name: Jeddah, country: SA, latitude: 21.4858, longitude: 39.1925, aliases: [Джидда, جدة]}
+  - {id: doha, name: Doha, country: QA, latitude: 25.2854, longitude: 51.5310, aliases: [Доха, الدوحة]}
+  - {id: abu-dhabi, name: Abu Dhabi, country: AE, latitude: 24.4539, longitude: 54.3773, aliases: [Абу-Даби, أبو ظبي]}
+  - {id: muscat, name: Muscat, country: OM, latitude: 23.5880, longitude: 58.3829, aliases: [Маскат, مسقط]}
+  - {id: amman, name: Amman, country: JO, latitude: 31.9539, longitude: 35.9106, aliases: [Амман, عمان]}
+  - {id: beirut, name: Beirut, country: LB, latitude: 33.8938, longitude: 35.5018, aliases: [Бейрут, بيروت]}
+  - {id: baghdad, name: Baghdad, country: IQ, latitude: 33.3152, longitude: 44.3661, aliases: [Багдад, بغداد]}
+  - {id: tehran, name: Tehran, country: IR, latitude: 35.6892, longitude: 51.3890, aliases: [Тегеран, تهران]}
+  - {id: tel-aviv, name: Tel Aviv, country: IL, latitude: 32.0853, longitude: 34.7818, aliases: [Тель-Авив, תל אביב]}
+  - {id: kolkata, name: Kolkata, country: IN, latitude: 22.5726, longitude: 88.3639, aliases: [Калькутта, কলকাতা]}
+  - {id: dhaka, name: Dhaka, country: BD, latitude: 23.8103, longitude: 90.4125, aliases: [Дакка, ঢাকা]}
+  - {id: chattogram, name: Chattogram, country: BD, latitude: 22.3569, longitude: 91.7832, aliases: [Читтагонг, Chittagong, চট্টগ্রাম]}
+  - {id: karachi, name: Karachi, country: PK, latitude: 24.8607, longitude: 67.0011, aliases: [Карачи, کراچی]}
+  - {id: lahore, name: Lahore, country: PK, latitude: 31.5204, longitude: 74.3587, aliases: [Лахор, لاہور]}
+  - {id: islamabad, name: Islamabad, country: PK, latitude: 33.6844, longitude: 73.0479, aliases: [Исламабад, اسلام آباد]}
+  - {id: kathmandu, name: Kathmandu, country: NP, latitude: 27.7172, longitude: 85.3240, aliases: [Катманду, काठमाडौं]}
+  - {id: colombo, name: Colombo, country: LK, latitude: 6.9271, longitude: 79.8612, aliases: [Коломбо, කොළඹ]}
+  - {id: bengaluru, name: Bengaluru, country: IN, latitude: 12.9716, longitude: 77.5946, aliases: [Бангалор, Bangalore, ಬೆಂಗಳೂರು]}
+  - {id: chennai, name: Chennai, country: IN, latitude: 13.0827, longitude: 80.2707, aliases: [Ченнаи, Madras, சென்னை]}
+  - {id: hong-kong, name: Hong Kong, country: HK, latitude: 22.3193, longitude: 114.1694, aliases: [Гонконг, 香港]}
+  - {id: taipei, name: Taipei, country: TW, latitude: 25.0330, longitude: 121.5654, aliases: [Тайбэй, 台北]}
+  - {id: osaka, name: Osaka, country: JP, latitude: 34.6937, longitude: 135.5023, aliases: [Осака, 大阪]}
+  - {id: sapporo, name: Sapporo, country: JP, latitude: 43.0618, longitude: 141.3545, aliases: [Саппоро, 札幌]}
+  - {id: busan, name: Busan, country: KR, latitude: 35.1796, longitude: 129.0756, aliases: [Пусан, 부산]}
+  - {id: guangzhou, name: Guangzhou, country: CN, latitude: 23.1291, longitude: 113.2644, aliases: [Гуанчжоу, 广州]}
+  - {id: wuhan, name: Wuhan, country: CN, latitude: 30.5928, longitude: 114.3055, aliases: [Ухань, 武汉]}
+  - {id: ulaanbaatar, name: Ulaanbaatar, country: MN, latitude: 47.8864, longitude: 106.9057, aliases: [Улан-Батор, Улаанбаатар]}
+  - {id: almaty, name: Almaty, country: KZ, latitude: 43.2220, longitude: 76.8512, aliases: [Алматы]}
+  - {id: astana, name: Astana, country: KZ, latitude: 51.1694, longitude: 71.4491, aliases: [Астана, Нур-Султан]}
+  - {id: tashkent, name: Tashkent, country: UZ, latitude: 41.2995, longitude: 69.2401, aliases: [Ташкент, Toshkent]}
+  - {id: bishkek, name: Bishkek, country: KG, latitude: 42.8746, longitude: 74.5698, aliases: [Бишкек]}
+  - {id: dushanbe, name: Dushanbe, country: TJ, latitude: 38.5598, longitude: 68.7870, aliases: [Душанбе]}
+  - {id: ashgabat, name: Ashgabat, country: TM, latitude: 37.9601, longitude: 58.3261, aliases: [Ашхабад, Aşgabat]}
+  - {id: baku, name: Baku, country: AZ, latitude: 40.4093, longitude: 49.8671, aliases: [Баку, Bakı]}
+  - {id: tbilisi, name: Tbilisi, country: GE, latitude: 41.7151, longitude: 44.8271, aliases: [Тбилиси, თბილისი]}
+  - {id: yerevan, name: Yerevan, country: AM, latitude: 40.1872, longitude: 44.5152, aliases: [Ереван, Երևան]}
+  - {id: brisbane, name: Brisbane, country: AU, latitude: -27.4698, longitude: 153.0251, aliases: [Брисбен]}
+  - {id: perth, name: Perth, country: AU, latitude: -31.9523, longitude: 115.8613, aliases: [Перт]}
+  - {id: adelaide, name: Adelaide, country: AU, latitude: -34.9285, longitude: 138.6007, aliases: [Аделаида]}
+  - {id: darwin, name: Darwin, country: AU, latitude: -12.4634, longitude: 130.8456, aliases: [Дарвин]}
+  - {id: auckland, name: Auckland, country: NZ, latitude: -36.8509, longitude: 174.7645, aliases: [Окленд]}
+  - {id: wellington, name: Wellington, country: NZ, latitude: -41.2866, longitude: 174.7756, aliases: [Веллингтон]}
+  - {id: port-moresby, name: Port Moresby, country: PG, latitude: -9.4438, longitude: 147.1803, aliases: [Порт-Морсби]}
+  - {id: suva, name: Suva, country: FJ, latitude: -18.1248, longitude: 178.4501, aliases: [Сува]}

@@ -3,7 +3,7 @@ function Stop-AIWeatherSignalsProcesses {
     $entryPoint = Join-Path $root '.venv\Scripts\weather-signals.exe'
     $owned = Get-CimInstance Win32_Process | Where-Object {
         $_.ProcessId -ne $PID -and $_.CommandLine -and
-        $_.CommandLine.Contains($entryPoint, [StringComparison]::OrdinalIgnoreCase)
+        $_.CommandLine -match [regex]::Escape($entryPoint)
     }
     foreach ($process in ($owned | Sort-Object ProcessId -Descending)) {
         Stop-Process -Id $process.ProcessId -Force -ErrorAction SilentlyContinue

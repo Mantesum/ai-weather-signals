@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator, model_validator
 
 from .enums import AssertionType, EvidenceType, Phenomenon
 
@@ -42,13 +42,36 @@ class LLMExtraction(BaseModel):
     intensity: float = Field(ge=0, le=1)
     place_name: str | None = None
     observed_at: datetime | None = None
-    time_precision: float = Field(ge=0, le=1)
+    time_precision: float = Field(
+        ge=0,
+        le=1,
+        description=(
+            "Confidence that observed_at is temporally precise, from 0.0 (very uncertain) "
+            "to 1.0 (exact); never a duration or timestamp"
+        ),
+    )
     evidence_type: EvidenceType = EvidenceType.TEXT
     has_photo: bool = False
     has_video: bool = False
     confidence: float = Field(ge=0, le=1)
     is_repost_or_copy: bool = False
     rationale_code: str = Field(max_length=80)
+
+    @field_validator("time_precision", mode="before")
+    @classmethod
+    def normalize_duration_like_time_precision(cls, value: object) -> object:
+        """Recover when a small local model returns an uncertainty duration instead of a score."""
+        if not isinstance(value, (int, float)) or isinstance(value, bool) or value <= 1:
+            return value
+        if value <= 60:
+            return 0.95
+        if value <= 3600:
+            return 0.85
+        if value <= 86400:
+            return 0.65
+        if value <= 604800:
+            return 0.45
+        return 0.25
 
     @model_validator(mode="after")
     def reject_impossible_candidate(self) -> "LLMExtraction":

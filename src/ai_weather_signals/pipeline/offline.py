@@ -23,16 +23,22 @@ class OfflineClassifier:
     """Deterministic network-free fixture/smoke classifier, never the production default."""
 
     prompt_hash = "offline-rules-v1"
+    prompt_version = "offline-rules-v1"
 
     def classify(
         self,
         text: str,
         source_region: str | None,
         published_at: str,
+        source_kind: str = "social",
         timeout_seconds: float | None = None,
     ) -> LLMExtraction:
         value = normalized_text(text)
         assertion = AssertionType.PERSONAL_CURRENT
+        if source_kind == "news":
+            assertion = AssertionType.NEWS
+        elif source_kind == "official":
+            assertion = AssertionType.OFFICIAL
         candidate = True
         if any(word in value for word in ("прогноз", "ожидается", "tomorrow", "forecast")):
             assertion, candidate = AssertionType.FORECAST, False

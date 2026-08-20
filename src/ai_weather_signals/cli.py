@@ -104,12 +104,23 @@ def sources_disable(name: str) -> None:
 def collect(
     offline: bool = typer.Option(False, help="Use deterministic fixture classifier, not the LLM"),
     force: bool = typer.Option(False, help="Ignore the configured polling interval"),
+    source: list[str] | None = typer.Option(
+        None, "--source", help="Run only the named source; repeat the option for multiple sources"
+    ),
     max_runtime_seconds: int | None = typer.Option(
         None, min=1, help="Stop safely after this many seconds without advancing a partial source cursor"
     ),
 ) -> None:
     settings = get_settings()
     definitions = load_sources(settings.source_config_path)
+    if source:
+        requested = set(source)
+        known = {item.name for item in definitions}
+        unknown = sorted(requested - known)
+        if unknown:
+            typer.echo(f"Unknown source(s): {', '.join(unknown)}", err=True)
+            raise typer.Exit(code=2)
+        definitions = [item for item in definitions if item.name in requested]
     if not offline and any(item.enabled for item in definitions) and not settings.llm_enabled:
         typer.echo("LLM_ENABLED is false; enable an LLM or use --offline.", err=True)
         raise typer.Exit(code=2)
@@ -165,7 +176,7 @@ def worker(
     max_runtime_seconds: int | None = None,
 ) -> None:
     while True:
-        collect(offline=offline, force=False, max_runtime_seconds=max_runtime_seconds)
+        collect(offline=offline, force=False, source=None, max_runtime_seconds=max_runtime_seconds)
         aggregate_command()
         if once:
             return

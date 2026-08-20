@@ -10,7 +10,7 @@ try {
     $entryPoint = Join-Path $root '.venv\Scripts\weather-signals.exe'
     if (-not (Test-Path -LiteralPath $entryPoint)) { throw "Missing entry point: $entryPoint. Run scripts\setup.ps1 first." }
     $process = Start-Process -FilePath $entryPoint `
-        -ArgumentList @('serve', '--host', '127.0.0.1', '--port', '8010') `
+        -ArgumentList @('serve', '--host', '0.0.0.0', '--port', '8010') `
         -RedirectStandardOutput $outputLogPath `
         -RedirectStandardError $errorLogPath `
         -WindowStyle Hidden -Wait -PassThru

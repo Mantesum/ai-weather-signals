@@ -1,0 +1,22 @@
+$ErrorActionPreference = 'Stop'
+
+$ollama = Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'
+$models = 'E:\Ollama\Models'
+
+if (-not (Test-Path -LiteralPath $ollama -PathType Leaf)) {
+    throw "Ollama executable not found: $ollama"
+}
+if (-not (Test-Path -LiteralPath $models -PathType Container)) {
+    throw "Ollama model store not found: $models"
+}
+
+$env:OLLAMA_HOST = '127.0.0.1:11434'
+$env:OLLAMA_MODELS = $models
+$env:OLLAMA_CONTEXT_LENGTH = '4096'
+$env:OLLAMA_NUM_PARALLEL = '1'
+$env:OLLAMA_MAX_LOADED_MODELS = '1'
+Remove-Item Env:OLLAMA_VULKAN -ErrorAction SilentlyContinue
+Remove-Item Env:OLLAMA_LLM_LIBRARY -ErrorAction SilentlyContinue
+
+& $ollama serve
+exit $LASTEXITCODE

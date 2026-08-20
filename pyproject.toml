@@ -1,6 +1,6 @@
 [project]
 name = "ai-weather-signals"
-version = "0.3.0"
+version = "0.4.0"
 description = "Privacy-aware public weather observation signal pipeline for ProjectEOL"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -12,6 +12,7 @@ dependencies = [
   "httpx>=0.28,<1",
   "pydantic-settings>=2.10,<3",
   "psycopg[binary]>=3.2,<4",
+  "python-dotenv>=1.1,<2",
   "pyyaml>=6.0.2,<7",
   "sqlalchemy>=2.0.41,<3",
   "structlog>=25.4,<26",
