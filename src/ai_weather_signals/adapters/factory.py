@@ -1,5 +1,6 @@
 from ..schemas import SourceDefinition
 from .base import Adapter
+from .cctv_jsonp import CCTVJsonpAdapter
 from .eonet import EONETAdapter
 from .gdelt import GDELTAdapter
 from .google_news import GoogleNewsAdapter
@@ -12,6 +13,7 @@ from .telegram import TelegramAdapter
 from .x_recent import XRecentSearchAdapter
 
 ADAPTERS: dict[str, type[Adapter]] = {
+    "cctv_jsonp": CCTVJsonpAdapter,
     "eonet": EONETAdapter,
     "gdelt": GDELTAdapter,
     "google_news": GoogleNewsAdapter,

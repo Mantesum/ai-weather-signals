@@ -6,6 +6,8 @@
 - Add China-focused discovery across `weather.com.cn`, Xinhua, China News, People's Daily, CGTN and China Daily.
 - Add bounded MSN weather discovery and replace the retired Reuters Environment RSS URL with fresh,
   Reuters-domain-only climate and severe-weather discovery.
+- Add fresh direct China News Service and Sixth Tone RSS feeds plus a bounded native adapter for
+  CCTV's current China and society JSONP news lists.
 
 ## 0.4.0 - 2026-08-20
 

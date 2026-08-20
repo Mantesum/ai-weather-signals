@@ -43,6 +43,9 @@ def test_deployment_has_china_and_additional_aggregators() -> None:
         "bing-news-weather",
         "msn-weather-discovery",
         "reuters-climate-disaster",
+        "chinanews-local-rss",
+        "sixth-tone-china-rss",
+        "cctv-china-news",
     }
     assert expected <= sources.keys()
     assert all(sources[name].enabled for name in expected)

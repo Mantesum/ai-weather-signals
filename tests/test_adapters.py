@@ -2,6 +2,7 @@ from pathlib import Path
 
 import httpx
 
+from ai_weather_signals.adapters.cctv_jsonp import CCTVJsonpAdapter
 from ai_weather_signals.adapters.eonet import EONETAdapter
 from ai_weather_signals.adapters.gdelt import GDELTAdapter
 from ai_weather_signals.adapters.google_news import GoogleNewsAdapter
@@ -10,6 +11,51 @@ from ai_weather_signals.adapters.multi_rss import MultiRSSAdapter
 from ai_weather_signals.adapters.rss import RSSAdapter
 from ai_weather_signals.adapters.x_recent import XRecentSearchAdapter
 from ai_weather_signals.schemas import SourceDefinition
+
+
+def test_cctv_jsonp_contract_combines_current_news_lists() -> None:
+    payload = "society(" + __import__("json").dumps(
+        {
+            "data": {
+                "list": [
+                    {
+                        "id": "CCTV-1",
+                        "title": "台风暴雨预警",
+                        "brief": "广东沿海将有强降雨",
+                        "url": "https://news.cctv.test/CCTV-1.shtml",
+                        "focus_date": "2026-08-20 14:30:00",
+                        "keywords": "台风 暴雨",
+                    }
+                ]
+            }
+        },
+        ensure_ascii=False,
+    ) + ")"
+    source = SourceDefinition(
+        name="fixture-cctv",
+        adapter="cctv_jsonp",
+        target="https://news.cctv.test/society.jsonp",
+        language="zh",
+        options={
+            "endpoints": [
+                "https://news.cctv.test/society.jsonp",
+                "https://news.cctv.test/china.jsonp",
+            ]
+        },
+    )
+    adapter = CCTVJsonpAdapter(
+        source,
+        httpx.Client(
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(200, text=payload, request=request)
+            )
+        ),
+    )
+    result = adapter.fetch()
+    assert len(result.messages) == 1
+    assert result.messages[0].external_id == "CCTV-1"
+    assert result.messages[0].raw["provider"] == "cctv_jsonp"
+    assert result.messages[0].published_at.isoformat() == "2026-08-20T06:30:00+00:00"
 
 
 def test_rss_contract_uses_anonymized_fixture() -> None:

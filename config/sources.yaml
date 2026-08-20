@@ -602,6 +602,51 @@ sources:
     feeds:
     - https://www.cgtn.com/subscribe/rss/section/china.xml
     - https://www.cgtn.com/subscribe/rss/section/world.xml
+- name: chinanews-local-rss
+  adapter: multi_rss
+  enabled: true
+  target: https://www.chinanews.com.cn/rss/
+  region: China
+  language: zh
+  poll_interval_seconds: 1800
+  trust: 0.68
+  tags: [news, china, local-media, rss, chinese-language]
+  store_text: true
+  options:
+    total_limit: 50
+    per_feed_limit: 25
+    feeds:
+    - https://www.chinanews.com.cn/rss/scroll-news.xml
+    - https://www.chinanews.com.cn/rss/china.xml
+    - https://www.chinanews.com.cn/rss/society.xml
+- name: sixth-tone-china-rss
+  adapter: rss
+  enabled: true
+  target: https://www.sixthtone.com/rss
+  region: China
+  language: en
+  poll_interval_seconds: 3600
+  trust: 0.64
+  tags: [news, china, local-media, rss]
+  store_text: true
+  options:
+    limit: 50
+- name: cctv-china-news
+  adapter: cctv_jsonp
+  enabled: true
+  target: https://news.cctv.com/2019/07/gaiban/cmsdatainterface/page/society_1.jsonp
+  region: China
+  language: zh
+  poll_interval_seconds: 1800
+  trust: 0.70
+  tags: [news, china, local-media, direct, chinese-language]
+  store_text: true
+  options:
+    total_limit: 60
+    per_endpoint_limit: 40
+    endpoints:
+    - https://news.cctv.com/2019/07/gaiban/cmsdatainterface/page/society_1.jsonp
+    - https://news.cctv.com/2019/07/gaiban/cmsdatainterface/page/china_1.jsonp
 - name: yahoo-news-rss
   adapter: rss
   enabled: true
